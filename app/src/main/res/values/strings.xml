@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">ChatGPT Test</string>
+
+    <!--Regular Chat-->
+    <string name="regular_chat_title">Regular Chat</string>
+
+    <!--Stream Chat-->
+    <string name="stream_chat_title">Stream Chat</string>
+
+    <!--Service-->
+    <string name="openai_base_url">https://api.openai.com/v1/</string>
+    <string name="openai_api_key">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</string>
+    <string name="auth_key_header_name">Authorization</string>
+    <string name="auth_key_header_value">Bearer %1$s</string>
+
+    <!--General-->
+    <string name="processing">Processing…</string>
+
+</resources>
