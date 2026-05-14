@@ -1,10 +1,12 @@
 package com.example.chatgpttest.features.regularChat
 
+import android.app.Application
 import android.util.Log
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.chatgpttest.managers.ConversationManager
 import com.example.chatgpttest.networkModels.ResponseRequest
 import com.example.chatgpttest.repos.OpenAiRepoImpl
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,7 +14,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class RegularChatViewModel(private val openAiRepo: OpenAiRepoImpl) : ViewModel() {
+class RegularChatViewModel(
+    application: Application,
+    private val openAiRepo: OpenAiRepoImpl,
+    private val conversationManager: ConversationManager
+) : AndroidViewModel(application) {
     private val uiScope = viewModelScope
     private val _uiState = MutableStateFlow(createUiState())
 
@@ -34,7 +40,13 @@ class RegularChatViewModel(private val openAiRepo: OpenAiRepoImpl) : ViewModel()
         try {
             updateIsShowProcessingDialog(true)
 
-            val responseRequest = ResponseRequest("gpt-5.4-nano-2026-03-17", inputState.text.toString(), false)
+            val responseRequest = ResponseRequest(
+                "gpt-5.4-nano-2026-03-17",
+                inputState.text.toString(),
+                false,
+                conversationManager.getPreviousResponseId(getApplication())
+            )
+
             val responseDto = openAiRepo.generateResponse(responseRequest)
 
             responseDto?.output?.first()?.content?.first()?.text?.let { text ->
