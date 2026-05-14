@@ -43,6 +43,7 @@ class RegularChatViewModel(private val openAiRepo: OpenAiRepoImpl) : ViewModel()
 
             updateIsShowProcessingDialog(false)
         } catch (e: Exception) {
+            updateIsShowProcessingDialog(false)
             Log.e("xxx", "Error: ${e.message.toString()}")
         }
     }
