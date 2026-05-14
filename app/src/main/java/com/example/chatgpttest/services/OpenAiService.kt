@@ -1,6 +1,7 @@
 package com.example.chatgpttest.services
 
 import android.content.Context
+import com.example.chatgpttest.BuildConfig
 import com.example.chatgpttest.R
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
@@ -20,7 +21,7 @@ class OpenAiService(context: Context) {
         val newRequest = chain.request().newBuilder().run {
             addHeader(
                 context.getString(R.string.auth_key_header_name),
-                context.getString(R.string.auth_key_header_value, context.getString(R.string.openai_api_key))
+                context.getString(R.string.auth_key_header_value, BuildConfig.OPENAI_API_KEY)
             )
             build()
         }
