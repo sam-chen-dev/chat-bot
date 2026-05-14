@@ -1,5 +1,6 @@
 package com.example.chatgpttest.repos
 
+import com.example.chatgpttest.networkModels.CompletedResponse
 import com.example.chatgpttest.networkModels.DeltaResponse
 import com.example.chatgpttest.networkModels.ResponseDto
 import com.example.chatgpttest.networkModels.ResponseEvent
@@ -53,7 +54,8 @@ class OpenAiRepoImpl(
                                 }
 
                                 Constants.RESPONSE_EVENT_COMPLETED -> {
-                                    emit(ResponseEvent.Completed)
+                                    val completedResponse = jsonParser.decodeFromString<CompletedResponse>(dataJsonString)
+                                    emit(ResponseEvent.Completed(completedResponse.response.id))
                                     break
                                 }
                             }
