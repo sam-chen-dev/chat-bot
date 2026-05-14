@@ -1,10 +1,12 @@
 package com.example.chatgpttest.features.streamChat
 
+import android.app.Application
 import android.util.Log
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.chatgpttest.managers.ConversationManager
 import com.example.chatgpttest.models.ChatMessage
 import com.example.chatgpttest.networkModels.ResponseEvent
 import com.example.chatgpttest.networkModels.ResponseRequest
@@ -17,9 +19,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class StreamChatViewModel(
+    application: Application,
     private val chatMessagesRepo: ChatMessagesRepoImpl,
-    private val openAiRepo: OpenAiRepoImpl
-) : ViewModel() {
+    private val openAiRepo: OpenAiRepoImpl,
+    private val conversationManager: ConversationManager
+) : AndroidViewModel(application) {
     private val uiScope = viewModelScope
     private val _uiState = MutableStateFlow(createUiState())
 
@@ -46,7 +50,13 @@ class StreamChatViewModel(
             val chatMessage = ChatMessage(SenderUuid.ME, inputText, System.currentTimeMillis())
             chatMessagesRepo.insert(chatMessage)
 
-            val responseRequest = ResponseRequest("gpt-5.4-nano-2026-03-17", inputText, true)
+            val responseRequest = ResponseRequest(
+                "gpt-5.4-nano-2026-03-17",
+                inputText,
+                true,
+                conversationManager.getPreviousResponseId(getApplication())
+            )
+
             var stringBuilder = StringBuilder()
             var insertedId = -1L
 
@@ -72,6 +82,8 @@ class StreamChatViewModel(
                     }
 
                     is ResponseEvent.Completed -> {
+                        conversationManager.savePreviousResponseId(getApplication(), responseEvent.responseId)
+
                         stringBuilder = StringBuilder()
                         insertedId = -1L
                     }
