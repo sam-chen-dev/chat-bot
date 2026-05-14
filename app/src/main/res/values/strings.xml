@@ -6,6 +6,7 @@
 
     <!--Stream Chat-->
     <string name="stream_chat_title">Stream Chat</string>
+    <string name="previous_response_id_key">previousResponseId</string>
 
     <!--Service-->
     <string name="openai_base_url">https://api.openai.com/v1/</string>
