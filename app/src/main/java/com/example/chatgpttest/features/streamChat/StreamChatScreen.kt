@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.chatgpttest.R
-import com.example.chatgpttest.models.ChatMessage
+import com.example.chatgpttest.models.domainModels.ChatMessage
 import com.example.chatgpttest.utils.SenderUuid
 import com.example.utlikotlin.IconButton
 import com.example.utlikotlin.Text

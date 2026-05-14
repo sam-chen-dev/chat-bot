@@ -7,7 +7,7 @@ import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chatgpttest.managers.ConversationManager
-import com.example.chatgpttest.networkModels.ResponseRequest
+import com.example.chatgpttest.models.networkModels.ResponseRequest
 import com.example.chatgpttest.repos.OpenAiRepoImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

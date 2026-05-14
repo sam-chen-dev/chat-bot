@@ -1,8 +1,8 @@
 package com.example.chatgpttest.repos
 
-import com.example.chatgpttest.networkModels.ResponseDto
-import com.example.chatgpttest.networkModels.ResponseEvent
-import com.example.chatgpttest.networkModels.ResponseRequest
+import com.example.chatgpttest.models.networkModels.ResponseDto
+import com.example.chatgpttest.models.networkModels.ResponseEvent
+import com.example.chatgpttest.models.networkModels.ResponseRequest
 import kotlinx.coroutines.flow.Flow
 
 interface OpenAiRepo {

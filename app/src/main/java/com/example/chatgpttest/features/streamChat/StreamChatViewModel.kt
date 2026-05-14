@@ -7,9 +7,9 @@ import androidx.compose.foundation.text.input.clearText
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chatgpttest.managers.ConversationManager
-import com.example.chatgpttest.models.ChatMessage
-import com.example.chatgpttest.networkModels.ResponseEvent
-import com.example.chatgpttest.networkModels.ResponseRequest
+import com.example.chatgpttest.models.domainModels.ChatMessage
+import com.example.chatgpttest.models.networkModels.ResponseEvent
+import com.example.chatgpttest.models.networkModels.ResponseRequest
 import com.example.chatgpttest.repos.ChatMessagesRepoImpl
 import com.example.chatgpttest.repos.OpenAiRepoImpl
 import com.example.chatgpttest.utils.SenderUuid

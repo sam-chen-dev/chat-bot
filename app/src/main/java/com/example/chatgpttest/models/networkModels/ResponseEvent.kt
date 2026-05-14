@@ -1,4 +1,4 @@
-package com.example.chatgpttest.networkModels
+package com.example.chatgpttest.models.networkModels
 
 sealed interface ResponseEvent {
     data class Delta(val text: String) : ResponseEvent

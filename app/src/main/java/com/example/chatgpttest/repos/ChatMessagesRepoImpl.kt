@@ -1,7 +1,7 @@
 package com.example.chatgpttest.repos
 
 import com.example.chatgpttest.db.ChatMessagesDao
-import com.example.chatgpttest.models.ChatMessage
+import com.example.chatgpttest.models.domainModels.ChatMessage
 
 class ChatMessagesRepoImpl(private val chatMessagesDao: ChatMessagesDao) : ChatMessagesRepo {
     val chatMessages = chatMessagesDao.getAllChatMessagesFlow()

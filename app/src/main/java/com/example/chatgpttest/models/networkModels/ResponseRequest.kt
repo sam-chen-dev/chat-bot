@@ -1,4 +1,4 @@
-package com.example.chatgpttest.networkModels
+package com.example.chatgpttest.models.networkModels
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

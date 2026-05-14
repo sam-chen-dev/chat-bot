@@ -1,4 +1,4 @@
-package com.example.chatgpttest.models
+package com.example.chatgpttest.models.domainModels
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

@@ -1,10 +1,10 @@
 package com.example.chatgpttest.repos
 
-import com.example.chatgpttest.networkModels.CompletedResponse
-import com.example.chatgpttest.networkModels.DeltaResponse
-import com.example.chatgpttest.networkModels.ResponseDto
-import com.example.chatgpttest.networkModels.ResponseEvent
-import com.example.chatgpttest.networkModels.ResponseRequest
+import com.example.chatgpttest.models.networkModels.CompletedResponse
+import com.example.chatgpttest.models.networkModels.DeltaResponse
+import com.example.chatgpttest.models.networkModels.ResponseDto
+import com.example.chatgpttest.models.networkModels.ResponseEvent
+import com.example.chatgpttest.models.networkModels.ResponseRequest
 import com.example.chatgpttest.services.OpenAiApi
 import com.example.chatgpttest.utils.Constants
 import kotlinx.coroutines.flow.Flow
