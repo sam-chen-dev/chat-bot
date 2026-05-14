@@ -17,7 +17,7 @@ retrofit2KotlinxSerializationConverter = "1.0.0"
 roomCompiler = "2.8.4"
 roomKtx = "2.8.4"
 roomRuntime = "2.8.4"
-utilKotlin = "2.5.0"
+utilKotlin = "2.5.1"
 kotlinKsp = "2.3.4"
 
 [libraries]
