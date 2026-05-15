@@ -10,6 +10,7 @@ Watch demo [here](https://youtube.com/shorts/vZoK0pZdXj0).
 ## Technologies Used
 - [Retrofit](https://square.github.io/retrofit/): Used for API call and streaming API integration.
 - [OpenAI Responses API](https://developers.openai.com/api/reference/responses/overview): Utilized fot chat functionality.
+- [Jetpack Compose](https://developer.android.com/compose): Modern Andriod UI toolkit.
 - [Navigation3](https://developer.android.com/guide/navigation/navigation-3): Modern navigation framwork for Jetpack Compose.
 - [Room](https://developer.android.com/training/data-storage/room): Made chat histroy persistent.
 - [DataStore](https://developer.android.com/topic/libraries/architecture/datastore): Made preferences data persistent.
