@@ -2,7 +2,7 @@
 
 #### A simple ChatGPT clone using Retrofit with OpenAI Responses API.
 
-## Screenshoot & Demo
+## Screenshot & Demo
 <img width="2880" height="2880" alt="20260514_153133" src="https://github.com/user-attachments/assets/b4dc2717-4a7d-46e5-8639-3c3cc57c27bb" />
 
 Watch demo [here](https://youtube.com/shorts/vZoK0pZdXj0). 
