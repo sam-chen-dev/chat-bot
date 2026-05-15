@@ -33,6 +33,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -41,7 +42,6 @@ import com.example.chatgpttest.models.domainModels.ChatMessage
 import com.example.chatgpttest.utils.SenderUuid
 import com.example.utlikotlin.IconButton
 import com.example.utlikotlin.Text
-import kotlinx.coroutines.flow.collectLatest
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -50,12 +50,21 @@ fun StreamChatScreen(onBackClick: () -> Unit) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val chatMessages by viewModel.chatMessages.collectAsStateWithLifecycle(emptyList())
     val inputState = viewModel.inputState
+
+    StreamChatContent(uiState, chatMessages, inputState, onBackClick)
+}
+
+@Composable
+private fun StreamChatContent(
+    uiState: StreamChatUiState,
+    chatMessages: List<ChatMessage>,
+    inputState: TextFieldState,
+    onBackClick: () -> Unit
+) {
     val listState = rememberLazyListState()
 
-    LaunchedEffect(Unit) {
-        viewModel.chatMessages.collectLatest {
-            listState.scrollToItem(0)
-        }
+    LaunchedEffect(chatMessages) {
+        listState.scrollToItem(0)
     }
 
     Column(
@@ -158,5 +167,16 @@ private fun RowScope.InputTextField(state: TextFieldState) {
         state = state,
         placeholder = { Text("Enter here") },
         modifier = Modifier.weight(1F)
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun StreamChatContentPreview() {
+    StreamChatContent(
+        uiState = StreamChatUiState({}),
+        chatMessages = emptyList(),
+        inputState = TextFieldState(),
+        onBackClick = {},
     )
 }
