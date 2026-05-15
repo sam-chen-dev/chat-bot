@@ -8,21 +8,21 @@
 Watch demo [here](https://youtube.com/shorts/vZoK0pZdXj0). 
 
 ## Technologies Used
-- [Retrofit](https://square.github.io/retrofit/): Used for API call and streaming API integration.
+- [Retrofit](https://square.github.io/retrofit/): Used for API calls and streaming API integration.
 - [OpenAI Responses API](https://developers.openai.com/api/reference/responses/overview): Utilized for chat functionality.
 - [Jetpack Compose](https://developer.android.com/compose): Modern Android UI toolkit.
 - [Navigation3](https://developer.android.com/guide/navigation/navigation-3): Modern navigation framework for Jetpack Compose.
 - [Room](https://developer.android.com/training/data-storage/room): Made chat history persistent.
 - [DataStore](https://developer.android.com/topic/libraries/architecture/datastore): Made preferences data persistent.
 - [Koin](https://insert-koin.io/docs/quickstart/android/): Dependency Injection framework for Kotlin.
-- [MVVM Architecture](https://developer.android.com/topic/architecture): Modern architectural pattern for structuring Android project.
+- [MVVM Architecture](https://developer.android.com/topic/architecture): Modern architectural pattern for scalable Android applications.
 
 ## Features
 - Support for both standard and streaming responses using Retrofit and Server-Sent Events (SSE).
-- Context-aware chat functionality using OpenAI Responses API.
+- Context-aware conversations powered by OpenAI Responses API.
 - Offline support for chat history.
-- Clean architecture for a modular and maintainable codebase.
-- Dependency Injection with Koin for efficient and scalable development.
+- Clean Architecture for a modular and maintainable codebase.
+- Dependency injection with Koin for efficient and scalable development.
 
 ## Architecture
 ```
