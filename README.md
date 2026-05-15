@@ -26,7 +26,7 @@ Watch demo [here](https://youtube.com/shorts/vZoK0pZdXj0).
 
 ## Installation
 
-In order the use this repo, kindly add your own OpenAI Key in `local.propertiese` file:
+In order the use this repo, kindly add your own OpenAI Key in `local.properties` file:
 ```
 OPENAI_API_KEY="xxx"
 ```
