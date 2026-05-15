@@ -175,7 +175,10 @@ private fun RowScope.InputTextField(state: TextFieldState) {
 private fun StreamChatContentPreview() {
     StreamChatContent(
         uiState = StreamChatUiState({}),
-        chatMessages = emptyList(),
+        chatMessages = listOf(
+            ChatMessage(SenderUuid.GPT, "I'm fine, thank you!", 0L),
+            ChatMessage(SenderUuid.ME, "Hi, how are you?", 1L)
+        ),
         inputState = TextFieldState(),
         onBackClick = {},
     )
