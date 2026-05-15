@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.chatgpttest.R
@@ -39,6 +40,16 @@ fun RegularChatScreen(onStreamChatClick: () -> Unit) {
     val inputState = viewModel.inputState
     val outputState = viewModel.outputState
 
+    RegularChatContent(uiState, inputState, outputState, onStreamChatClick)
+}
+
+@Composable
+private fun RegularChatContent(
+    uiState: RegularChatUiState,
+    inputState: TextFieldState,
+    outputState: TextFieldState,
+    onStreamChatClick: () -> Unit
+) {
     if (uiState.isShowProcessingDialog) {
         ProcessingDialog()
     }
@@ -121,5 +132,16 @@ private fun OutputTextField(state: TextFieldState) {
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight(0.8F)
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun RegularChatContentPreview() {
+    RegularChatContent(
+        uiState = RegularChatUiState(false, {}),
+        inputState = TextFieldState(),
+        outputState = TextFieldState(),
+        onStreamChatClick = {}
     )
 }
