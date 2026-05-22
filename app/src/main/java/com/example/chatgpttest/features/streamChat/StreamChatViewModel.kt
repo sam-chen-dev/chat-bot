@@ -13,9 +13,10 @@ import com.example.chatgpttest.models.networkModels.ResponseRequest
 import com.example.chatgpttest.repos.ChatMessagesRepoImpl
 import com.example.chatgpttest.repos.OpenAiRepoImpl
 import com.example.chatgpttest.utils.SenderUuid
+import com.example.utlikotlin.toStateFlow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 class StreamChatViewModel(
@@ -27,16 +28,18 @@ class StreamChatViewModel(
     private val uiScope = viewModelScope
     private val _uiState = MutableStateFlow(createUiState())
 
-    val chatMessages = chatMessagesRepo.chatMessages
-    val inputState = TextFieldState()
+    val uiState = combine(chatMessagesRepo.chatMessages, _uiState) { chatMessages, uiState ->
+        uiState.copy(chatMessages = chatMessages)
+    }.toStateFlow(uiScope, createUiState())
 
-    val uiState = _uiState.asStateFlow()
+    val inputState = TextFieldState()
 
     init {
 
     }
 
     private fun createUiState(): StreamChatUiState = StreamChatUiState(
+        emptyList(),
         ::sendChatMessage
     )
 

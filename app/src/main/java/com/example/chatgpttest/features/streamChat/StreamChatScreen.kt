@@ -48,22 +48,20 @@ import org.koin.compose.viewmodel.koinViewModel
 fun StreamChatScreen(onBackClick: () -> Unit) {
     val viewModel: StreamChatViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val chatMessages by viewModel.chatMessages.collectAsStateWithLifecycle(emptyList())
     val inputState = viewModel.inputState
 
-    StreamChatContent(uiState, chatMessages, inputState, onBackClick)
+    StreamChatContent(uiState, inputState, onBackClick)
 }
 
 @Composable
 private fun StreamChatContent(
     uiState: StreamChatUiState,
-    chatMessages: List<ChatMessage>,
     inputState: TextFieldState,
     onBackClick: () -> Unit
 ) {
     val listState = rememberLazyListState()
 
-    LaunchedEffect(chatMessages) {
+    LaunchedEffect(uiState.chatMessages) {
         listState.scrollToItem(0)
     }
 
@@ -77,7 +75,7 @@ private fun StreamChatContent(
                 .fillMaxSize()
                 .imePadding()
         ) {
-            ChatMessageList(listState, chatMessages)
+            ChatMessageList(listState, uiState.chatMessages)
 
             HorizontalDivider()
 
@@ -174,10 +172,12 @@ private fun RowScope.InputTextField(state: TextFieldState) {
 @Composable
 private fun StreamChatContentPreview() {
     StreamChatContent(
-        uiState = StreamChatUiState({}),
-        chatMessages = listOf(
-            ChatMessage(SenderUuid.GPT, "I'm fine, thank you!", 0L),
-            ChatMessage(SenderUuid.ME, "Hi, how are you?", 1L)
+        uiState = StreamChatUiState(
+            chatMessages = listOf(
+                ChatMessage(SenderUuid.GPT, "I'm fine, thank you!", 0L),
+                ChatMessage(SenderUuid.ME, "Hi, how are you?", 1L)
+            ),
+            onSendClick = {}
         ),
         inputState = TextFieldState(),
         onBackClick = {},
