@@ -6,6 +6,7 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.chatgpttest.enums.GptModel
 import com.example.chatgpttest.managers.ConversationManager
 import com.example.chatgpttest.models.networkModels.ResponseRequest
 import com.example.chatgpttest.repos.OpenAiRepoImpl
@@ -41,7 +42,7 @@ class RegularChatViewModel(
             updateIsShowProcessingDialog(true)
 
             val responseRequest = ResponseRequest(
-                "gpt-5.4-nano-2026-03-17",
+                GptModel.NANO.id,
                 inputState.text.toString(),
                 false,
                 conversationManager.getPreviousResponseId(getApplication())

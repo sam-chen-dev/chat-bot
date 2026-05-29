@@ -6,6 +6,7 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.chatgpttest.enums.GptModel
 import com.example.chatgpttest.managers.ConversationManager
 import com.example.chatgpttest.models.domainModels.ChatMessage
 import com.example.chatgpttest.models.networkModels.ResponseEvent
@@ -54,7 +55,7 @@ class StreamChatViewModel(
             chatMessagesRepo.insert(chatMessage)
 
             val responseRequest = ResponseRequest(
-                "gpt-5.4-nano-2026-03-17",
+                GptModel.NANO.id,
                 inputText,
                 true,
                 conversationManager.getPreviousResponseId(getApplication())
