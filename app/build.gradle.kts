@@ -33,7 +33,7 @@ android {
         buildConfigField(
             type = "String",
             name = "OPENAI_API_KEY",
-            value = localProperties["OPENAI_API_KEY"].toString()
+            value = localProperties.getProperty("OPENAI_API_KEY")
         )
     }
 
