@@ -2,6 +2,7 @@ package com.example.chatgpttest.features.regularChat
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -68,7 +69,7 @@ private fun RegularChatContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1F)
-                    .padding(horizontal = 16.dp),
+                    .padding(16.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -81,7 +82,7 @@ private fun RegularChatContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1F)
-                    .padding(horizontal = 16.dp),
+                    .padding(16.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -113,12 +114,14 @@ private fun Toolbar(onStreamChatClick: () -> Unit) {
 }
 
 @Composable
-private fun InputTextField(state: TextFieldState) {
+private fun ColumnScope.InputTextField(state: TextFieldState) {
     OutlinedTextField(
         state = state,
         label = { Text("Input") },
         labelPosition = TextFieldLabelPosition.Attached(true),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .weight(1F)
     )
 }
 
@@ -131,7 +134,7 @@ private fun OutputTextField(state: TextFieldState) {
         readOnly = true,
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight(0.8F)
+            .fillMaxHeight()
     )
 }
 
