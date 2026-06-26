@@ -1,48 +1,42 @@
 package com.example.chatgpttest.features.streamChat
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.material.icons.automirrored.rounded.Send
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.chatgpttest.R
 import com.example.chatgpttest.features.renderer.MessageContent
 import com.example.chatgpttest.models.domainModels.ChatMessage
 import com.example.chatgpttest.utils.SenderUuid
-import com.example.utlikotlin.IconButton
-import com.example.utlikotlin.Text
 import org.koin.compose.viewmodel.koinViewModel
+
+// Modern Color Palette
+private val BackgroundColor = Color(0xFFF8FAFC)
+private val PrimaryGradient = Brush.linearGradient(listOf(Color(0xFF6366F1), Color(0xFF8B5CF6)))
+private val UserBubbleColor = Color(0xFF6366F1)
+private val AiBubbleColor = Color(0xFFFFFFFF)
+private val TextPrimary = Color(0xFF1E293B)
+private val TextSecondary = Color(0xFF64748B)
 
 @Composable
 fun StreamChatScreen(onBackClick: () -> Unit) {
@@ -53,6 +47,7 @@ fun StreamChatScreen(onBackClick: () -> Unit) {
     StreamChatContent(uiState, inputState, onBackClick)
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun StreamChatContent(
     uiState: StreamChatUiState,
@@ -62,109 +57,190 @@ private fun StreamChatContent(
     val listState = rememberLazyListState()
 
     LaunchedEffect(uiState.chatMessages) {
-        listState.scrollToItem(0)
+        if (uiState.chatMessages.isNotEmpty()) {
+            listState.animateScrollToItem(0)
+        }
     }
 
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Toolbar(onBackClick)
-
+    Scaffold(
+        topBar = { ModernToolbar(onBackClick) },
+        containerColor = BackgroundColor
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(paddingValues)
                 .imePadding()
         ) {
-            ChatMessageList(listState, uiState.chatMessages)
-
-            HorizontalDivider()
-
-            TypingArea(inputState, uiState.onSendClick)
+            Box(modifier = Modifier.weight(1f)) {
+                ChatMessageList(listState, uiState.chatMessages)
+            }
+            ModernTypingArea(inputState, uiState.onSendClick)
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun Toolbar(onBackClick: () -> Unit) {
-    TopAppBar(
-        title = { Text(R.string.stream_chat_title) },
-        navigationIcon = { IconButton(Icons.AutoMirrored.Filled.ArrowBack, "Back", onBackClick) },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            titleContentColor = MaterialTheme.colorScheme.onPrimary,
-            navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-            actionIconContentColor = MaterialTheme.colorScheme.onPrimary
-        )
+private fun ModernToolbar(onBackClick: () -> Unit) {
+    CenterAlignedTopAppBar(
+        title = {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = "AI Assistant",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = TextPrimary
+                )
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .size(6.dp)
+                            .clip(CircleShape)
+                            .background(Color(0xFF10B981)) // Online Green
+                    )
+                    Spacer(Modifier.width(4.dp))
+                    Text(
+                        text = "Always Ready",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = TextSecondary
+                    )
+                }
+
+            }
+        },
+        navigationIcon = {
+            IconButton(onClick = onBackClick) {
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = TextPrimary)
+            }
+        },
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = Color.White.copy(alpha = 0.8f)
+        ),
+        modifier = Modifier.shadow(1.dp)
     )
 }
 
 @Composable
-private fun ColumnScope.ChatMessageList(state: LazyListState, chatMessages: List<ChatMessage>) {
+private fun ChatMessageList(state: LazyListState, chatMessages: List<ChatMessage>) {
     LazyColumn(
         state = state,
         reverseLayout = true,
-        modifier = Modifier
-            .fillMaxWidth()
-            .weight(1F)
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(chatMessages) { chatMessage ->
-            ChatMessageListItem(chatMessage)
+            ModernChatMessageItem(chatMessage)
         }
     }
 }
 
 @Composable
-private fun ChatMessageListItem(chatMessage: ChatMessage) {
+private fun ModernChatMessageItem(chatMessage: ChatMessage) {
+    val isMe = chatMessage.senderUuid == SenderUuid.ME
+    
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = if (isMe) Arrangement.End else Arrangement.Start
     ) {
-        if (chatMessage.senderUuid == SenderUuid.ME) {
-            Spacer(Modifier.weight(1F))
-            TextView(chatMessage.text, Alignment.End)
-        } else {
-            TextView(chatMessage.text, Alignment.Start)
+        if (!isMe) {
+            Surface(
+                modifier = Modifier.size(36.dp),
+                shape = CircleShape,
+                color = Color(0xFFEEF2FF)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Text("🤖", fontSize = 18.sp)
+                }
+            }
+            Spacer(Modifier.width(8.dp))
+        }
+        
+        Surface(
+            shape = RoundedCornerShape(
+                topStart = 20.dp,
+                topEnd = 20.dp,
+                bottomStart = if (isMe) 20.dp else 4.dp,
+                bottomEnd = if (isMe) 4.dp else 20.dp
+            ),
+            color = if (isMe) UserBubbleColor else AiBubbleColor,
+            tonalElevation = if (isMe) 0.dp else 2.dp,
+            shadowElevation = 1.dp,
+            modifier = Modifier.widthIn(max = 300.dp)
+        ) {
+            Box(modifier = Modifier.padding(12.dp)) {
+                MessageContent(
+                    text = chatMessage.text,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+
+        if (isMe) {
+            Spacer(Modifier.width(8.dp))
+            Surface(
+                modifier = Modifier.size(36.dp),
+                shape = CircleShape,
+                color = UserBubbleColor.copy(alpha = 0.1f)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Text("👤", fontSize = 18.sp)
+                }
+            }
         }
     }
 }
 
 @Composable
-private fun TextView(text: String, alignment: Alignment.Horizontal) {
-    MessageContent(
-        text = text,
-        modifier = Modifier
-            .fillMaxWidth(0.8F)
-            .wrapContentWidth(alignment)
-            .border(BorderStroke(1.dp, MaterialTheme.colorScheme.primary), RoundedCornerShape(8.dp))
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-    )
-}
-
-@Composable
-private fun TypingArea(state: TextFieldState, onSendClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
+private fun ModernTypingArea(state: TextFieldState, onSendClick: () -> Unit) {
+    Surface(
+        color = Color.White,
+        shadowElevation = 12.dp,
+        modifier = Modifier.fillMaxWidth()
     ) {
-        InputTextField(state)
+        Row(
+            modifier = Modifier
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Surface(
+                shape = RoundedCornerShape(28.dp),
+                color = Color(0xFFF1F5F9),
+                modifier = Modifier.weight(1f)
+            ) {
+                OutlinedTextField(
+                    state = state,
+                    placeholder = { Text("Ask anything...", color = TextSecondary) },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color.Transparent,
+                        unfocusedBorderColor = Color.Transparent
+                    ),
+                    textStyle = MaterialTheme.typography.bodyMedium.copy(color = TextPrimary)
+                )
+            }
 
-        Spacer(Modifier.width(16.dp))
+            Spacer(Modifier.width(12.dp))
 
-        IconButton(Icons.AutoMirrored.Filled.Send, "Send", onSendClick)
+            Surface(
+                onClick = onSendClick,
+                shape = CircleShape,
+                color = UserBubbleColor,
+                modifier = Modifier.size(48.dp)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Rounded.Send,
+                        contentDescription = "Send",
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            }
+        }
     }
-}
-
-@Composable
-private fun RowScope.InputTextField(state: TextFieldState) {
-    OutlinedTextField(
-        state = state,
-        placeholder = { Text("Enter here") },
-        modifier = Modifier.weight(1F)
-    )
 }
 
 @Preview(showBackground = true)
@@ -173,8 +249,8 @@ private fun StreamChatContentPreview() {
     StreamChatContent(
         uiState = StreamChatUiState(
             chatMessages = listOf(
-                ChatMessage(SenderUuid.GPT, "I'm fine, thank you!", 0L),
-                ChatMessage(SenderUuid.ME, "Hi, how are you?", 1L)
+                ChatMessage(SenderUuid.GPT, "Hello! How can I assist you with your project today?", 0L),
+                ChatMessage(SenderUuid.ME, "I need help with advanced UI design.", 1L)
             ),
             onSendClick = {}
         ),
