@@ -18,4 +18,7 @@ interface ChatMessagesDao {
 
     @Query("SELECT * FROM chatMessages ORDER BY creationTimeInMillis DESC")
     fun getAllChatMessagesFlow(): Flow<List<ChatMessage>>
+
+    @Query("DELETE FROM chatMessages")
+    suspend fun deleteAll()
 }

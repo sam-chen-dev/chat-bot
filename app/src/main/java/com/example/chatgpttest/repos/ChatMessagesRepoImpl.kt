@@ -13,4 +13,8 @@ class ChatMessagesRepoImpl(private val chatMessagesDao: ChatMessagesDao) : ChatM
     override suspend fun update(chatMessage: ChatMessage): Int {
         return chatMessagesDao.update(chatMessage)
     }
+
+    override suspend fun deleteAll() {
+        chatMessagesDao.deleteAll()
+    }
 }

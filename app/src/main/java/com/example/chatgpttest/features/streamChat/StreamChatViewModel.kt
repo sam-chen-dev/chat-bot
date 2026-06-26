@@ -9,7 +9,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.chatgpttest.enums.GptModel
 import com.example.chatgpttest.managers.ConversationManager
 import com.example.chatgpttest.models.domainModels.ChatMessage
-import com.example.chatgpttest.models.networkModels.ResponseEvent
 import com.example.chatgpttest.models.networkModels.ResponseRequest
 import com.example.chatgpttest.repos.ChatMessagesRepoImpl
 import com.example.chatgpttest.repos.OpenAiRepoImpl
@@ -41,8 +40,14 @@ class StreamChatViewModel(
 
     private fun createUiState(): StreamChatUiState = StreamChatUiState(
         emptyList(),
-        ::sendChatMessage
+        ::sendChatMessage,
+        ::startNewChat
     )
+
+    private fun startNewChat() = uiScope.launch {
+        chatMessagesRepo.deleteAll()
+        conversationManager.clearConversation(getApplication())
+    }
 
     private fun sendChatMessage() = uiScope.launch {
         try {

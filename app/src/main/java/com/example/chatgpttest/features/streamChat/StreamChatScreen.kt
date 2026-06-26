@@ -1,7 +1,18 @@
 package com.example.chatgpttest.features.streamChat
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -12,13 +23,24 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.Send
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.outlined.DeleteOutline
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,7 +54,6 @@ import org.koin.compose.viewmodel.koinViewModel
 
 // Modern Color Palette
 private val BackgroundColor = Color(0xFFF8FAFC)
-private val PrimaryGradient = Brush.linearGradient(listOf(Color(0xFF6366F1), Color(0xFF8B5CF6)))
 private val UserBubbleColor = Color(0xFF6366F1)
 private val AiBubbleColor = Color(0xFFFFFFFF)
 private val TextPrimary = Color(0xFF1E293B)
@@ -63,7 +84,7 @@ private fun StreamChatContent(
     }
 
     Scaffold(
-        topBar = { ModernToolbar(onBackClick) },
+        topBar = { ModernToolbar(onBackClick, uiState.onNewChatClick) },
         containerColor = BackgroundColor
     ) { paddingValues ->
         Column(
@@ -82,7 +103,7 @@ private fun StreamChatContent(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ModernToolbar(onBackClick: () -> Unit) {
+private fun ModernToolbar(onBackClick: () -> Unit, onNewChatClick: () -> Unit) {
     CenterAlignedTopAppBar(
         title = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -93,6 +114,7 @@ private fun ModernToolbar(onBackClick: () -> Unit) {
                     color = TextPrimary
                 )
 
+                /*
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(
                         modifier = Modifier
@@ -107,6 +129,7 @@ private fun ModernToolbar(onBackClick: () -> Unit) {
                         color = TextSecondary
                     )
                 }
+                */
 
             }
         },
@@ -115,7 +138,12 @@ private fun ModernToolbar(onBackClick: () -> Unit) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = TextPrimary)
             }
         },
-        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+        actions = {
+            IconButton(onClick = onNewChatClick) {
+                Icon(Icons.Outlined.DeleteOutline, contentDescription = "New Chat", tint = TextPrimary)
+            }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color.White.copy(alpha = 0.8f)
         ),
         modifier = Modifier.shadow(1.dp)
@@ -252,7 +280,8 @@ private fun StreamChatContentPreview() {
                 ChatMessage(SenderUuid.GPT, "Hello! How can I assist you with your project today?", 0L),
                 ChatMessage(SenderUuid.ME, "I need help with advanced UI design.", 1L)
             ),
-            onSendClick = {}
+            onSendClick = {},
+            onNewChatClick = {}
         ),
         inputState = TextFieldState(),
         onBackClick = {},

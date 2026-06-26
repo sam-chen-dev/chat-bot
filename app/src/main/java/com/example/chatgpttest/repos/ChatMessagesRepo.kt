@@ -6,4 +6,6 @@ interface ChatMessagesRepo {
     suspend fun insert(chatMessage: ChatMessage): Long
 
     suspend fun update(chatMessage: ChatMessage): Int
+
+    suspend fun deleteAll()
 }
