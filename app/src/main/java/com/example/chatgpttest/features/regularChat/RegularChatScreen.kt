@@ -4,13 +4,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ChatBubbleOutline
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.chatgpttest.R
+import com.example.chatgpttest.features.renderer.MessageContent
 import com.example.chatgpttest.utils.ProcessingDialog
 import com.example.utlikotlin.Button
 import com.example.utlikotlin.IconButton
@@ -69,11 +71,12 @@ private fun RegularChatContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1F)
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.Start
             ) {
-                OutputTextField(outputState)
+                MessageContent(outputState.text.toString())
             }
 
             HorizontalDivider()
@@ -122,19 +125,6 @@ private fun ColumnScope.InputTextField(state: TextFieldState) {
         modifier = Modifier
             .fillMaxWidth()
             .weight(1F)
-    )
-}
-
-@Composable
-private fun OutputTextField(state: TextFieldState) {
-    OutlinedTextField(
-        state = state,
-        label = { Text("Output") },
-        labelPosition = TextFieldLabelPosition.Attached(true),
-        readOnly = true,
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
     )
 }
 
