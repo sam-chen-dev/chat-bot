@@ -27,6 +27,12 @@
     <string name="ai_workspace">فضای کاری هوشمند</string>
     <string name="always_ready">همیشه آماده</string>
 
+    <!-- Keys / Internal -->
+    <string name="previous_response_id_key">شناسه پاسخ قبلی</string>
+    <string name="openai_base_url">https://api.openai.com/v1/</string>
+    <string name="auth_key_header_name">مجوز</string>
+    <string name="auth_key_header_value">Bearer %1$s</string>
+
     <!-- General -->
     <string name="processing">در حال پردازش…</string>
     <string name="back">بازگشت</string>
@@ -37,4 +43,7 @@
     <string name="select_language">انتخاب زبان</string>
     <string name="english">انگلیسی (English)</string>
     <string name="persian">فارسی</string>
+    <string name="share">اشتراک‌گذاری</string>
+    <string name="copy">کپی</string>
+    <string name="copied_to_clipboard">در حافظه کپی شد</string>
 </resources>

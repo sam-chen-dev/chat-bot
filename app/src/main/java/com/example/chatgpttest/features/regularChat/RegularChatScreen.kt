@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.ChatBubbleOutline
+import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -20,7 +21,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -108,7 +111,21 @@ private fun RegularChatContent(
                             )
                         }
                     } else {
-                        MessageContent(outputState.text.toString())
+                        val clipboardManager = LocalClipboardManager.current
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            MessageContent(outputState.text.toString())
+                            
+                            IconButton(
+                                onClick = { clipboardManager.setText(AnnotatedString(outputState.text.toString())) },
+                                modifier = Modifier.align(Alignment.BottomEnd)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.ContentCopy,
+                                    contentDescription = stringResource(R.string.copy),
+                                    tint = AccentColor
+                                )
+                            }
+                        }
                     }
                 }
             }

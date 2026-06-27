@@ -1,5 +1,6 @@
 package com.example.chatgpttest.features.streamChat
 
+import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,8 +28,10 @@ import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DrawerState
@@ -57,7 +60,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -117,11 +123,22 @@ private fun StreamChatContent(
             }
         }
     ) {
+        val context = LocalContext.current
         Scaffold(
             topBar = {
                 ModernToolbar(
                     onBackClick = onBackClick,
-                    onMenuClick = { scope.launch { drawerState.open() } }
+                    onMenuClick = { scope.launch { drawerState.open() } },
+                    onShareClick = {
+                        val shareText = uiState.chatMessages.reversed().joinToString("\n\n") {
+                            "${if (it.senderUuid == SenderUuid.ME) "Me" else "AI"}: ${it.text}"
+                        }
+                        val intent = Intent(Intent.ACTION_SEND).apply {
+                            type = "text/plain"
+                            putExtra(Intent.EXTRA_TEXT, shareText)
+                        }
+                        context.startActivity(Intent.createChooser(intent, context.getString(R.string.share)))
+                    }
                 )
             },
             containerColor = BackgroundColor
@@ -281,7 +298,8 @@ private fun EmptyChatPlaceholder() {
 @Composable
 private fun ModernToolbar(
     onBackClick: () -> Unit,
-    onMenuClick: () -> Unit
+    onMenuClick: () -> Unit,
+    onShareClick: () -> Unit
 ) {
     CenterAlignedTopAppBar(
         title = {
@@ -298,6 +316,9 @@ private fun ModernToolbar(
             }
         },
         actions = {
+            IconButton(onClick = onShareClick) {
+                Icon(Icons.Outlined.Share, contentDescription = stringResource(R.string.share), tint = TextPrimary)
+            }
             IconButton(onClick = onBackClick) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back), tint = TextPrimary)
             }
@@ -327,55 +348,73 @@ private fun ChatMessageList(state: LazyListState, chatMessages: List<ChatMessage
 @Composable
 private fun ModernChatMessageItem(chatMessage: ChatMessage) {
     val isMe = chatMessage.senderUuid == SenderUuid.ME
+    val clipboardManager = LocalClipboardManager.current
     
-    Row(
+    Column(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = if (isMe) Arrangement.End else Arrangement.Start
+        horizontalAlignment = if (isMe) Alignment.End else Alignment.Start
     ) {
-        if (!isMe) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = if (isMe) Arrangement.End else Arrangement.Start
+        ) {
+            if (!isMe) {
+                Surface(
+                    modifier = Modifier.size(36.dp),
+                    shape = CircleShape,
+                    color = Color(0xFFEEF2FF)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Text("🤖", fontSize = 18.sp)
+                    }
+                }
+                Spacer(Modifier.width(8.dp))
+            }
+            
             Surface(
-                modifier = Modifier.size(36.dp),
-                shape = CircleShape,
-                color = Color(0xFFEEF2FF)
+                shape = RoundedCornerShape(
+                    topStart = 20.dp,
+                    topEnd = 20.dp,
+                    bottomStart = if (isMe) 20.dp else 4.dp,
+                    bottomEnd = if (isMe) 4.dp else 20.dp
+                ),
+                color = if (isMe) UserBubbleColor else AiBubbleColor,
+                tonalElevation = if (isMe) 0.dp else 2.dp,
+                shadowElevation = 1.dp,
+                modifier = Modifier.widthIn(max = 280.dp)
             ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Text("🤖", fontSize = 18.sp)
+                Box(modifier = Modifier.padding(12.dp)) {
+                    MessageContent(
+                        text = chatMessage.text,
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
             }
-            Spacer(Modifier.width(8.dp))
+
+            if (isMe) {
+                Spacer(Modifier.width(8.dp))
+                Surface(
+                    modifier = Modifier.size(36.dp),
+                    shape = CircleShape,
+                    color = UserBubbleColor.copy(alpha = 0.1f)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Text("👤", fontSize = 18.sp)
+                    }
+                }
+            }
         }
         
-        Surface(
-            shape = RoundedCornerShape(
-                topStart = 20.dp,
-                topEnd = 20.dp,
-                bottomStart = if (isMe) 20.dp else 4.dp,
-                bottomEnd = if (isMe) 4.dp else 20.dp
-            ),
-            color = if (isMe) UserBubbleColor else AiBubbleColor,
-            tonalElevation = if (isMe) 0.dp else 2.dp,
-            shadowElevation = 1.dp,
-            modifier = Modifier.widthIn(max = 300.dp)
+        IconButton(
+            onClick = { clipboardManager.setText(AnnotatedString(chatMessage.text)) },
+            modifier = Modifier.size(32.dp).padding(top = 4.dp)
         ) {
-            Box(modifier = Modifier.padding(12.dp)) {
-                MessageContent(
-                    text = chatMessage.text,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        }
-
-        if (isMe) {
-            Spacer(Modifier.width(8.dp))
-            Surface(
-                modifier = Modifier.size(36.dp),
-                shape = CircleShape,
-                color = UserBubbleColor.copy(alpha = 0.1f)
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Text("👤", fontSize = 18.sp)
-                }
-            }
+            Icon(
+                imageVector = Icons.Outlined.ContentCopy,
+                contentDescription = stringResource(R.string.copy),
+                tint = TextSecondary,
+                modifier = Modifier.size(16.dp)
+            )
         }
     }
 }
