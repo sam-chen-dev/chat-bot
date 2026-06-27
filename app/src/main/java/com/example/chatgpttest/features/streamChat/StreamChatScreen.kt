@@ -27,6 +27,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -150,6 +151,22 @@ private fun ColumnScope.ConversationHistoryDrawer(
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 16.dp)
+        )
+
+        OutlinedTextField(
+            value = uiState.searchQuery,
+            onValueChange = uiState.onSearchQueryChange,
+            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+            placeholder = { Text("Search chats...", color = TextSecondary) },
+            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = TextSecondary) },
+            shape = RoundedCornerShape(12.dp),
+            singleLine = true,
+            colors = OutlinedTextFieldDefaults.colors(
+                unfocusedContainerColor = Color(0xFFF1F5F9),
+                focusedContainerColor = Color(0xFFF1F5F9),
+                unfocusedBorderColor = Color.Transparent,
+                focusedBorderColor = Color.Transparent
+            )
         )
         
         Button(
@@ -399,10 +416,12 @@ private fun StreamChatContentPreview() {
             ),
             conversations = emptyList(),
             currentConversationId = null,
+            searchQuery = "",
             onSendClick = {},
             onNewChatClick = {},
             onConversationClick = {},
-            onDeleteConversationClick = {}
+            onDeleteConversationClick = {},
+            onSearchQueryChange = {}
         ),
         inputState = TextFieldState(),
         onBackClick = {},

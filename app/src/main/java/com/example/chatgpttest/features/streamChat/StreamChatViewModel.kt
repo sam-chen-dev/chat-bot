@@ -28,6 +28,7 @@ class StreamChatViewModel(
 ) : AndroidViewModel(application) {
     private val uiScope = viewModelScope
     private val _currentConversationId = MutableStateFlow<Long?>(null)
+    private val _searchQuery = MutableStateFlow("")
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val _chatMessages = _currentConversationId.flatMapLatest { id ->
@@ -35,24 +36,30 @@ class StreamChatViewModel(
         else chatMessagesRepo.getMessagesForConversation(id)
     }
 
-    private val _conversations = chatMessagesRepo.getAllConversations()
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val _conversations = _searchQuery.flatMapLatest { query ->
+        if (query.isBlank()) chatMessagesRepo.getAllConversations()
+        else chatMessagesRepo.searchConversations(query)
+    }
 
-    val uiState = combine(_chatMessages, _conversations, _currentConversationId) { messages, conversations, currentId ->
+    val uiState = combine(_chatMessages, _conversations, _currentConversationId, _searchQuery) { messages, conversations, currentId, query ->
         StreamChatUiState(
             chatMessages = messages,
             conversations = conversations,
             currentConversationId = currentId,
+            searchQuery = query,
             onSendClick = ::sendChatMessage,
             onNewChatClick = ::startNewChat,
             onConversationClick = { _currentConversationId.value = it },
-            onDeleteConversationClick = ::deleteConversation
+            onDeleteConversationClick = ::deleteConversation,
+            onSearchQueryChange = { _searchQuery.value = it }
         )
     }.toStateFlow(uiScope, createInitialUiState())
 
     val inputState = TextFieldState()
 
     private fun createInitialUiState() = StreamChatUiState(
-        emptyList(), emptyList(), null, {}, {}, {}, {}
+        emptyList(), emptyList(), null, "", {}, {}, {}, {}, {}
     )
 
     private fun startNewChat() = uiScope.launch {

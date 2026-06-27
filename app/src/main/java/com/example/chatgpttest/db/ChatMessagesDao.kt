@@ -37,6 +37,9 @@ interface ChatMessagesDao {
     @Query("SELECT * FROM conversations ORDER BY lastUpdate DESC")
     fun getAllConversations(): Flow<List<Conversation>>
 
+    @Query("SELECT * FROM conversations WHERE title LIKE '%' || :query || '%' ORDER BY lastUpdate DESC")
+    fun searchConversations(query: String): Flow<List<Conversation>>
+
     @Query("DELETE FROM conversations WHERE id = :conversationId")
     suspend fun deleteConversation(conversationId: Long)
 }

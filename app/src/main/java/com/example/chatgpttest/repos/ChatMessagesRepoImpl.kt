@@ -33,6 +33,10 @@ class ChatMessagesRepoImpl(private val chatMessagesDao: ChatMessagesDao) : ChatM
         return chatMessagesDao.getAllConversations()
     }
 
+    override fun searchConversations(query: String): Flow<List<Conversation>> {
+        return chatMessagesDao.searchConversations(query)
+    }
+
     override suspend fun deleteConversation(conversationId: Long) {
         chatMessagesDao.deleteConversation(conversationId)
         chatMessagesDao.deleteMessagesForConversation(conversationId)

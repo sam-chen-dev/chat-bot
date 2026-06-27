@@ -14,5 +14,6 @@ interface ChatMessagesRepo {
     // Conversations
     suspend fun createConversation(title: String): Long
     fun getAllConversations(): Flow<List<Conversation>>
+    fun searchConversations(query: String): Flow<List<Conversation>>
     suspend fun deleteConversation(conversationId: Long)
 }

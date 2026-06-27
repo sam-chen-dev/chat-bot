@@ -7,8 +7,10 @@ data class StreamChatUiState(
     val chatMessages: List<ChatMessage>,
     val conversations: List<Conversation>,
     val currentConversationId: Long?,
+    val searchQuery: String = "",
     val onSendClick: () -> Unit,
     val onNewChatClick: () -> Unit,
     val onConversationClick: (Long) -> Unit,
-    val onDeleteConversationClick: (Long) -> Unit
+    val onDeleteConversationClick: (Long) -> Unit,
+    val onSearchQueryChange: (String) -> Unit
 )
