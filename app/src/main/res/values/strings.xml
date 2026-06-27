@@ -1,19 +1,49 @@
 <resources>
     <string name="app_name">ChatGPT Test</string>
 
-    <!--Regular Chat-->
+    <!-- Titles -->
     <string name="regular_chat_title">Regular Chat</string>
-
-    <!--Stream Chat-->
     <string name="stream_chat_title">Stream Chat</string>
-    <string name="previous_response_id_key">previousResponseId</string>
+    <string name="ai_assistant">AI Assistant</string>
+    <string name="advanced_query">Advanced Query</string>
+    <string name="single_query">Single Query</string>
 
-    <!--Service-->
+    <!-- Drawer / History -->
+    <string name="chat_history">Chat History</string>
+    <string name="search_chats">Search chats…</string>
+    <string name="new_chat">New Chat</string>
+
+    <!-- Placeholders / Labels -->
+    <string name="empty_chat_placeholder">How can I help you today?</string>
+    <string name="ask_anything">Ask anything…</string>
+    <string name="waiting_for_input">Waiting for your input…</string>
+    <string name="what_can_i_help">What can I help you with today?</string>
+    <string name="analyze_request">Analyze Request</string>
+    <string name="response_label">Response</string>
+    <string name="ask_something">Ask something</string>
+    <string name="answer_placeholder">Your answer will appear here…</string>
+    <string name="type_question_here">Type your question here…</string>
+    <string name="send_request">Send Request</string>
+    <string name="ai_workspace">AI WORKSPACE</string>
+    <string name="always_ready">Always Ready</string>
+
+    <!-- Keys / Internal -->
+    <string name="previous_response_id_key">previousResponseId</string>
     <string name="openai_base_url">https://api.openai.com/v1/</string>
     <string name="auth_key_header_name">Authorization</string>
     <string name="auth_key_header_value">Bearer %1$s</string>
 
-    <!--General-->
+    <!-- General -->
     <string name="processing">Processing…</string>
-
+    <string name="back">Back</string>
+    <string name="menu">Menu</string>
+    <string name="switch_to_stream">Switch to Stream</string>
+    <string name="settings">Settings</string>
+    <string name="language">Language</string>
+    <string name="select_language">Select Language</string>
+    <string name="english">English</string>
+    <string name="persian">Persian (فارسی)</string>
+    <string name="share">Share</string>
+    <string name="copy">Copy</string>
+    <string name="copied_to_clipboard">Copied to clipboard</string>
 </resources>
