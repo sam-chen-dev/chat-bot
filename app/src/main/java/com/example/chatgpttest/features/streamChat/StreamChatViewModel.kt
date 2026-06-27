@@ -19,6 +19,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 class StreamChatViewModel(
     application: Application,
@@ -65,7 +66,7 @@ class StreamChatViewModel(
 
             Log.d("StreamChatVM", "Request: $responseRequest")
 
-            val mockResponse = """
+            /*val mockResponse = """
                 Sure! Here's some code and math for you:
                 
                 ### Kotlin Code Example:
@@ -98,9 +99,11 @@ class StreamChatViewModel(
                 currentChatMessage = currentChatMessage.copy(text = currentText).apply { id = insertedId }
                 chatMessagesRepo.update(currentChatMessage)
                 Log.d("StreamChatVM", "Updated GPT message ID $insertedId with text length: ${currentText.length}")
-            }
+            }*/
 
-            /*
+            var stringBuilder = StringBuilder()
+            var insertedId = -1L
+
             openAiRepo.generateResponseStream(responseRequest).collect { responseEvent ->
                 Log.d("StreamChatVM", "Received event: ${'$'}responseEvent")
                 when (responseEvent) {
@@ -121,7 +124,7 @@ class StreamChatViewModel(
                             chatMessagesRepo.update(chatMessage)
                         }
 
-                        delay(100L)
+                        delay(100.milliseconds)
                     }
 
                     is ResponseEvent.Completed -> {
@@ -133,7 +136,6 @@ class StreamChatViewModel(
                     }
                 }
             }
-            */
         } catch (e: Exception) {
             Log.e("StreamChatVM", "Error in sendChatMessage: ${e.message}", e)
         }
