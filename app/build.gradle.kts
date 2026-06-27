@@ -17,9 +17,7 @@ if (localPropertiesFile.exists()) {
 
 android {
     namespace = "com.example.chatgpttest"
-    compileSdk {
-        version = release(37)
-    }
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.example.chatgpttest"
@@ -33,7 +31,7 @@ android {
         buildConfigField(
             type = "String",
             name = "OPENAI_API_KEY",
-            value = localProperties.getProperty("OPENAI_API_KEY")
+            value = localProperties.getProperty("OPENAI_API_KEY") ?: ""
         )
     }
 
@@ -93,4 +91,7 @@ dependencies {
 
     //Koin for Compose
     implementation(libs.koin.androidx.compose)
+
+    // markdown
+    implementation(libs.coil.compose)
 }

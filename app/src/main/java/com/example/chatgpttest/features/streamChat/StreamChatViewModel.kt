@@ -19,6 +19,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 class StreamChatViewModel(
     application: Application,
@@ -51,6 +52,8 @@ class StreamChatViewModel(
             if (inputText.isBlank()) return@launch
             inputState.clearText()
 
+            Log.d("StreamChatVM", "Sending message: $inputText")
+
             val chatMessage = ChatMessage(SenderUuid.ME, inputText, System.currentTimeMillis())
             chatMessagesRepo.insert(chatMessage)
 
@@ -61,10 +64,48 @@ class StreamChatViewModel(
                 conversationManager.getPreviousResponseId(getApplication())
             )
 
+            Log.d("StreamChatVM", "Request: $responseRequest")
+
+            /*val mockResponse = """
+                Sure! Here's some code and math for you:
+                
+                ### Kotlin Code Example:
+                ```kotlin
+                fun main() {
+                    println("Hello, Markdown!")
+                    val sum = (1..10).sum()
+                    println("Sum is: ${'$'}sum")
+                }
+                ```
+                
+                ### Mathematical Formulas:
+                - **Quadratic Formula:** ${'$'}x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}${'$'}
+                - **Euler's Identity:** ${'$'}e^{i\pi} + 1 = 0${'$'}
+                - **Matrix Example:**
+                  ${'$'}\begin{pmatrix} a & b \\ c & d \end{pmatrix}${'$'}
+                
+                I hope this helps with your markdown testing!
+            """.trimIndent()
+
+            var currentChatMessage = ChatMessage(SenderUuid.GPT, "", System.currentTimeMillis())
+            val insertedId = chatMessagesRepo.insert(currentChatMessage)
+            currentChatMessage = currentChatMessage.copy().apply { id = insertedId }
+            Log.d("StreamChatVM", "Inserted GPT message placeholder with ID: $insertedId")
+            
+            val words = mockResponse.split(" ")
+            words.forEachIndexed { index, _ ->
+                delay(50L) // Simulate streaming
+                val currentText = words.take(index + 1).joinToString(" ")
+                currentChatMessage = currentChatMessage.copy(text = currentText).apply { id = insertedId }
+                chatMessagesRepo.update(currentChatMessage)
+                Log.d("StreamChatVM", "Updated GPT message ID $insertedId with text length: ${currentText.length}")
+            }*/
+
             var stringBuilder = StringBuilder()
             var insertedId = -1L
 
             openAiRepo.generateResponseStream(responseRequest).collect { responseEvent ->
+                Log.d("StreamChatVM", "Received event: ${'$'}responseEvent")
                 when (responseEvent) {
                     is ResponseEvent.Delta -> {
                         stringBuilder.append(responseEvent.text)
@@ -74,6 +115,7 @@ class StreamChatViewModel(
                         if (insertedId == -1L) {
                             val chatMessage = ChatMessage(SenderUuid.GPT, text, System.currentTimeMillis())
                             insertedId = chatMessagesRepo.insert(chatMessage)
+                            Log.d("StreamChatVM", "Inserted new GPT message with ID: ${'$'}insertedId")
                         } else {
                             val chatMessage = ChatMessage(SenderUuid.GPT, text, System.currentTimeMillis()).apply {
                                 id = insertedId
@@ -82,10 +124,11 @@ class StreamChatViewModel(
                             chatMessagesRepo.update(chatMessage)
                         }
 
-                        delay(100L)
+                        delay(100.milliseconds)
                     }
 
                     is ResponseEvent.Completed -> {
+                        Log.d("StreamChatVM", "Stream completed. ResponseID: ${'$'}{responseEvent.responseId}")
                         conversationManager.savePreviousResponseId(getApplication(), responseEvent.responseId)
 
                         stringBuilder = StringBuilder()
@@ -94,7 +137,7 @@ class StreamChatViewModel(
                 }
             }
         } catch (e: Exception) {
-            Log.e("xxx", "Error: ${e.message.toString()}")
+            Log.e("StreamChatVM", "Error in sendChatMessage: ${e.message}", e)
         }
     }
 }

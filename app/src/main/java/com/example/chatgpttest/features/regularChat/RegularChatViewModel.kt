@@ -54,6 +54,28 @@ class RegularChatViewModel(
                 outputState.setTextAndPlaceCursorAtEnd(text)
             }
 
+            /*val mockResponse = """
+                ### Regular Chat Mock Response
+                
+                This is a mock response with markdown and math for testing:
+                
+                - **Bold Text**
+                - *Italic Text*
+                
+                ```kotlin
+                val message = "Hello from Regular Chat!"
+                println(message)
+                ```
+                
+                Mathematical formula:
+                ${'$'}E = mc^2${'$'}
+                
+                And a block formula:
+                ${'$'}${'$'} \int_{a}^{b} x^2 dx = \frac{b^3 - a^3}{3} ${'$'}${'$'}
+            """.trimIndent()
+
+            outputState.setTextAndPlaceCursorAtEnd(mockResponse)*/
+
             updateIsShowProcessingDialog(false)
         } catch (e: Exception) {
             updateIsShowProcessingDialog(false)
