@@ -49,6 +49,8 @@
     <string name="voice_input">ورودی صوتی</string>
     <string name="attach_image">پیوست تصویر</string>
     <string name="speech_not_supported">تشخیص گفتار در این دستگاه پشتیبانی نمی‌شود</string>
+    <string name="listen">شنیدن پاسخ</string>
+    <string name="stop">توقف پخش</string>
     <string name="theme">پوسته</string>
     <string name="light_theme">روشن</string>
     <string name="dark_theme">تیره</string>

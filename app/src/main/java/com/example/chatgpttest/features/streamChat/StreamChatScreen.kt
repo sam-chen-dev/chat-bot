@@ -36,6 +36,7 @@ import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Settings
@@ -61,6 +62,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -89,19 +91,27 @@ import com.example.chatgpttest.features.renderer.MessageContent
 import com.example.chatgpttest.models.domainModels.ChatMessage
 import com.example.chatgpttest.models.domainModels.Conversation
 import com.example.chatgpttest.utils.SenderUuid
+import com.example.chatgpttest.utils.TtsHandler
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 // Modern Color Palette
-// Removed hardcoded colors to support Dark Mode via MaterialTheme.colorScheme
 
 @Composable
 fun StreamChatScreen(onBackClick: () -> Unit, onSettingsClick: () -> Unit) {
     val viewModel: StreamChatViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val inputState = viewModel.inputState
+    val context = LocalContext.current
+    val ttsHandler = remember { TtsHandler(context) }
 
-    StreamChatContent(uiState, inputState, onBackClick, onSettingsClick)
+    DisposableEffect(Unit) {
+        onDispose {
+            ttsHandler.release()
+        }
+    }
+
+    StreamChatContent(uiState, inputState, onBackClick, onSettingsClick, ttsHandler)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -110,7 +120,8 @@ private fun StreamChatContent(
     uiState: StreamChatUiState,
     inputState: TextFieldState,
     onBackClick: () -> Unit,
-    onSettingsClick: () -> Unit
+    onSettingsClick: () -> Unit,
+    ttsHandler: TtsHandler
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -134,6 +145,7 @@ private fun StreamChatContent(
         }
     ) {
         val context = LocalContext.current
+        val shareTitle = stringResource(R.string.share)
         Scaffold(
             topBar = {
                 ModernToolbar(
@@ -147,7 +159,7 @@ private fun StreamChatContent(
                             type = "text/plain"
                             putExtra(Intent.EXTRA_TEXT, shareText)
                         }
-                        context.startActivity(Intent.createChooser(intent, context.getString(R.string.share)))
+                        context.startActivity(Intent.createChooser(intent, shareTitle))
                     }
                 )
             },
@@ -163,7 +175,7 @@ private fun StreamChatContent(
                     if (uiState.currentConversationId == null && uiState.chatMessages.isEmpty()) {
                         EmptyChatPlaceholder()
                     } else {
-                        ChatMessageList(listState, uiState.chatMessages)
+                        ChatMessageList(listState, uiState.chatMessages, ttsHandler)
                     }
                 }
                 ModernTypingArea(inputState, uiState.onSendClick)
@@ -341,7 +353,7 @@ private fun ModernToolbar(
 }
 
 @Composable
-private fun ChatMessageList(state: LazyListState, chatMessages: List<ChatMessage>) {
+private fun ChatMessageList(state: LazyListState, chatMessages: List<ChatMessage>, ttsHandler: TtsHandler) {
     LazyColumn(
         state = state,
         reverseLayout = true,
@@ -350,13 +362,13 @@ private fun ChatMessageList(state: LazyListState, chatMessages: List<ChatMessage
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(chatMessages) { chatMessage ->
-            ModernChatMessageItem(chatMessage)
+            ModernChatMessageItem(chatMessage, ttsHandler)
         }
     }
 }
 
 @Composable
-private fun ModernChatMessageItem(chatMessage: ChatMessage) {
+private fun ModernChatMessageItem(chatMessage: ChatMessage, ttsHandler: TtsHandler) {
     val isMe = chatMessage.senderUuid == SenderUuid.ME
     val clipboardManager = LocalClipboardManager.current
     
@@ -427,16 +439,33 @@ private fun ModernChatMessageItem(chatMessage: ChatMessage) {
         }
     }
     
-    IconButton(
-        onClick = { clipboardManager.setText(AnnotatedString(chatMessage.text)) },
-        modifier = Modifier.size(32.dp).padding(top = 4.dp)
+    Row(
+        modifier = Modifier.padding(top = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Icon(
-            imageVector = Icons.Outlined.ContentCopy,
-            contentDescription = stringResource(R.string.copy),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(16.dp)
-        )
+        IconButton(
+            onClick = { clipboardManager.setText(AnnotatedString(chatMessage.text)) },
+            modifier = Modifier.size(32.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.ContentCopy,
+                contentDescription = stringResource(R.string.copy),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(16.dp)
+            )
+        }
+
+        IconButton(
+            onClick = { ttsHandler.speak(chatMessage.text) },
+            modifier = Modifier.size(32.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.VolumeUp,
+                contentDescription = stringResource(R.string.listen),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(16.dp)
+            )
+        }
     }
 }
 }
@@ -575,6 +604,7 @@ private fun StreamChatContentPreview() {
         ),
         inputState = TextFieldState(),
         onBackClick = {},
-        onSettingsClick = {}
+        onSettingsClick = {},
+        ttsHandler = TtsHandler(LocalContext.current)
     )
 }

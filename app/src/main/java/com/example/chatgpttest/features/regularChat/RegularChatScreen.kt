@@ -18,16 +18,13 @@ import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.ChatBubbleOutline
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,10 +44,8 @@ import coil.compose.AsyncImage
 import com.example.chatgpttest.R
 import com.example.chatgpttest.features.renderer.MessageContent
 import com.example.chatgpttest.utils.ProcessingDialog
+import com.example.chatgpttest.utils.TtsHandler
 import org.koin.androidx.compose.koinViewModel
-
-// Premium Color Palette
-// Removed hardcoded colors to support Dark Mode via MaterialTheme.colorScheme
 
 @Composable
 fun RegularChatScreen(onStreamChatClick: () -> Unit, onSettingsClick: () -> Unit) {
@@ -58,8 +53,16 @@ fun RegularChatScreen(onStreamChatClick: () -> Unit, onSettingsClick: () -> Unit
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val inputState = viewModel.inputState
     val outputState = viewModel.outputState
+    val context = LocalContext.current
+    val ttsHandler = remember { TtsHandler(context) }
 
-    RegularChatContent(uiState, inputState, outputState, onStreamChatClick, onSettingsClick)
+    DisposableEffect(Unit) {
+        onDispose {
+            ttsHandler.release()
+        }
+    }
+
+    RegularChatContent(uiState, inputState, outputState, onStreamChatClick, onSettingsClick, ttsHandler)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -69,7 +72,8 @@ private fun RegularChatContent(
     inputState: TextFieldState,
     outputState: TextFieldState,
     onStreamChatClick: () -> Unit,
-    onSettingsClick: () -> Unit
+    onSettingsClick: () -> Unit,
+    ttsHandler: TtsHandler
 ) {
     var selectedImageUri by remember { mutableStateOf<String?>(null) }
     
@@ -150,15 +154,29 @@ private fun RegularChatContent(
                         Box(modifier = Modifier.fillMaxSize()) {
                             MessageContent(outputState.text.toString())
                             
-                            IconButton(
-                                onClick = { clipboardManager.setText(AnnotatedString(outputState.text.toString())) },
-                                modifier = Modifier.align(Alignment.BottomEnd)
+                            Row(
+                                modifier = Modifier.align(Alignment.BottomEnd),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                Icon(
-                                    imageVector = Icons.Outlined.ContentCopy,
-                                    contentDescription = stringResource(R.string.copy),
-                                    tint = MaterialTheme.colorScheme.primary
-                                )
+                                IconButton(
+                                    onClick = { ttsHandler.speak(outputState.text.toString()) }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.VolumeUp,
+                                        contentDescription = stringResource(R.string.listen),
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+
+                                IconButton(
+                                    onClick = { clipboardManager.setText(AnnotatedString(outputState.text.toString())) }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.ContentCopy,
+                                        contentDescription = stringResource(R.string.copy),
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                }
                             }
                         }
                     }
@@ -309,6 +327,7 @@ private fun RegularChatContentPreview() {
         inputState = TextFieldState(),
         outputState = TextFieldState(),
         onStreamChatClick = {},
-        onSettingsClick = {}
+        onSettingsClick = {},
+        ttsHandler = TtsHandler(LocalContext.current)
     )
 }
