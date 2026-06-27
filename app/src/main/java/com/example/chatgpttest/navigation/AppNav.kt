@@ -14,11 +14,15 @@ data object RegularChat : NavKey
 @Serializable
 data object StreamChat : NavKey
 
+@Serializable
+data object Settings : NavKey
+
 @Composable
 fun EntryProviderScope<NavKey>.RegularChatEntry(backStack: NavBackStack<NavKey>) {
     entry<RegularChat> {
         RegularChatScreen(
-            onStreamChatClick = { backStack.add(StreamChat) }
+            onStreamChatClick = { backStack.add(StreamChat) },
+            onSettingsClick = { backStack.add(Settings) }
         )
     }
 }
@@ -27,6 +31,16 @@ fun EntryProviderScope<NavKey>.RegularChatEntry(backStack: NavBackStack<NavKey>)
 fun EntryProviderScope<NavKey>.StreamChatEntry(backStack: NavBackStack<NavKey>) {
     entry<StreamChat> {
         StreamChatScreen(
+            onBackClick = { backStack.removeLastOrNull() },
+            onSettingsClick = { backStack.add(Settings) }
+        )
+    }
+}
+
+@Composable
+fun EntryProviderScope<NavKey>.SettingsEntry(backStack: NavBackStack<NavKey>) {
+    entry<Settings> {
+        com.example.chatgpttest.features.settings.SettingsScreen(
             onBackClick = { backStack.removeLastOrNull() }
         )
     }
