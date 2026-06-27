@@ -20,8 +20,10 @@ roomKtx = "2.8.4"
 roomRuntime = "2.8.4"
 utilKotlin = "2.5.1"
 kotlinKsp = "2.3.4"
+appcompat = "1.7.0"
 
 [libraries]
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-compose-material-icons-core = { module = "androidx.compose.material:material-icons-core" }
 androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }

@@ -3,7 +3,6 @@ package com.example.chatgpttest.features.streamChat
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,16 +28,20 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
@@ -54,12 +57,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.chatgpttest.R
 import com.example.chatgpttest.features.renderer.MessageContent
 import com.example.chatgpttest.models.domainModels.ChatMessage
 import com.example.chatgpttest.models.domainModels.Conversation
@@ -75,12 +80,12 @@ private val TextPrimary = Color(0xFF1E293B)
 private val TextSecondary = Color(0xFF64748B)
 
 @Composable
-fun StreamChatScreen(onBackClick: () -> Unit) {
+fun StreamChatScreen(onBackClick: () -> Unit, onSettingsClick: () -> Unit) {
     val viewModel: StreamChatViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val inputState = viewModel.inputState
 
-    StreamChatContent(uiState, inputState, onBackClick)
+    StreamChatContent(uiState, inputState, onBackClick, onSettingsClick)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -88,7 +93,8 @@ fun StreamChatScreen(onBackClick: () -> Unit) {
 private fun StreamChatContent(
     uiState: StreamChatUiState,
     inputState: TextFieldState,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onSettingsClick: () -> Unit
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -107,7 +113,7 @@ private fun StreamChatContent(
                 modifier = Modifier.width(300.dp),
                 drawerContainerColor = Color.White
             ) {
-                ConversationHistoryDrawer(uiState, scope, drawerState)
+                ConversationHistoryDrawer(uiState, scope, drawerState, onSettingsClick)
             }
         }
     ) {
@@ -140,14 +146,15 @@ private fun StreamChatContent(
 }
 
 @Composable
-private fun ColumnScope.ConversationHistoryDrawer(
+private fun ConversationHistoryDrawer(
     uiState: StreamChatUiState,
     scope: kotlinx.coroutines.CoroutineScope,
-    drawerState: DrawerState
+    drawerState: DrawerState,
+    onSettingsClick: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Text(
-            "Chat History",
+            text = stringResource(R.string.chat_history),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 16.dp)
@@ -157,7 +164,7 @@ private fun ColumnScope.ConversationHistoryDrawer(
             value = uiState.searchQuery,
             onValueChange = uiState.onSearchQueryChange,
             modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-            placeholder = { Text("Search chats...", color = TextSecondary) },
+            placeholder = { Text(stringResource(R.string.search_chats), color = TextSecondary) },
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = TextSecondary) },
             shape = RoundedCornerShape(12.dp),
             singleLine = true,
@@ -179,22 +186,40 @@ private fun ColumnScope.ConversationHistoryDrawer(
         ) {
             Icon(Icons.Default.Add, contentDescription = null)
             Spacer(Modifier.width(8.dp))
-            Text("New Chat")
+            Text(stringResource(R.string.new_chat))
         }
 
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(uiState.conversations) { conversation ->
-                ConversationItem(
-                    conversation = conversation,
-                    isSelected = conversation.id == uiState.currentConversationId,
-                    onClick = {
-                        uiState.onConversationClick(conversation.id)
-                        scope.launch { drawerState.close() }
-                    },
-                    onDelete = { uiState.onDeleteConversationClick(conversation.id) }
-                )
+        Box(modifier = Modifier.weight(1f)) {
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                items(uiState.conversations) { conversation ->
+                    ConversationItem(
+                        conversation = conversation,
+                        isSelected = conversation.id == uiState.currentConversationId,
+                        onClick = {
+                            uiState.onConversationClick(conversation.id)
+                            scope.launch { drawerState.close() }
+                        },
+                        onDelete = { uiState.onDeleteConversationClick(conversation.id) }
+                    )
+                }
             }
         }
+
+        HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+        NavigationDrawerItem(
+            label = { Text(stringResource(R.string.settings)) },
+            selected = false,
+            onClick = {
+                scope.launch { drawerState.close() }
+                onSettingsClick()
+            },
+            icon = { Icon(Icons.Outlined.Settings, contentDescription = null) },
+            shape = RoundedCornerShape(12.dp),
+            colors = NavigationDrawerItemDefaults.colors(
+                unselectedContainerColor = Color.Transparent
+            )
+        )
     }
 }
 
@@ -244,7 +269,7 @@ private fun EmptyChatPlaceholder() {
             Text("🤖", fontSize = 48.sp)
             Spacer(Modifier.height(16.dp))
             Text(
-                "How can I help you today?",
+                text = stringResource(R.string.empty_chat_placeholder),
                 style = MaterialTheme.typography.titleMedium,
                 color = TextSecondary
             )
@@ -261,7 +286,7 @@ private fun ModernToolbar(
     CenterAlignedTopAppBar(
         title = {
             Text(
-                text = "AI Assistant",
+                text = stringResource(R.string.ai_assistant),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = TextPrimary
@@ -269,12 +294,12 @@ private fun ModernToolbar(
         },
         navigationIcon = {
             IconButton(onClick = onMenuClick) {
-                Icon(Icons.Default.Menu, contentDescription = "Menu", tint = TextPrimary)
+                Icon(Icons.Default.Menu, contentDescription = stringResource(R.string.menu), tint = TextPrimary)
             }
         },
         actions = {
             IconButton(onClick = onBackClick) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = TextPrimary)
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back), tint = TextPrimary)
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
@@ -374,7 +399,7 @@ private fun ModernTypingArea(state: TextFieldState, onSendClick: () -> Unit) {
             ) {
                 OutlinedTextField(
                     state = state,
-                    placeholder = { Text("Ask anything...", color = TextSecondary) },
+                    placeholder = { Text(stringResource(R.string.ask_anything), color = TextSecondary) },
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Color.Transparent,
@@ -395,7 +420,7 @@ private fun ModernTypingArea(state: TextFieldState, onSendClick: () -> Unit) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Rounded.Send,
-                        contentDescription = "Send",
+                        contentDescription = stringResource(R.string.send_request),
                         tint = Color.White,
                         modifier = Modifier.size(24.dp)
                     )
@@ -425,5 +450,6 @@ private fun StreamChatContentPreview() {
         ),
         inputState = TextFieldState(),
         onBackClick = {},
+        onSettingsClick = {}
     )
 }
