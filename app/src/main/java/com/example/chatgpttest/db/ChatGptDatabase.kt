@@ -5,12 +5,14 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.chatgpttest.models.domainModels.ChatMessage
+import com.example.chatgpttest.models.domainModels.Conversation
 
 @Database(
     entities = [
-        ChatMessage::class
+        ChatMessage::class,
+        Conversation::class
     ],
-    version = 1
+    version = 4
 )
 abstract class ChatGptDatabase : RoomDatabase() {
     abstract val chatMessagesDao: ChatMessagesDao
@@ -28,7 +30,9 @@ abstract class ChatGptDatabase : RoomDatabase() {
                         context,
                         ChatGptDatabase::class.java,
                         "chat_gpt_database"
-                    ).build()
+                    )
+                        .fallbackToDestructiveMigration()
+                        .build()
 
                     INSTANCE = instance
                 }

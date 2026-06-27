@@ -30,6 +30,7 @@ fun NavDisplay(backStack: NavBackStack<NavKey>) {
         entryProvider = entryProvider {
             RegularChatEntry(backStack)
             StreamChatEntry(backStack)
+            SettingsEntry(backStack)
         },
         transitionSpec = {
             slideInHorizontally(
