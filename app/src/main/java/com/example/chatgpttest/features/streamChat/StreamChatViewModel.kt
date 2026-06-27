@@ -48,7 +48,7 @@ class StreamChatViewModel(
             conversations = conversations,
             currentConversationId = currentId,
             searchQuery = query,
-            onSendClick = ::sendChatMessage,
+            onSendClick = { imageUri: String? -> sendChatMessage(imageUri) },
             onNewChatClick = ::startNewChat,
             onConversationClick = { _currentConversationId.value = it },
             onDeleteConversationClick = ::deleteConversation,
@@ -74,21 +74,22 @@ class StreamChatViewModel(
         }
     }
 
-    private fun sendChatMessage() = uiScope.launch {
+    private fun sendChatMessage(imageUri: String? = null) = uiScope.launch {
         try {
             val inputText = inputState.text.toString()
-            if (inputText.isBlank()) return@launch
+            if (inputText.isBlank() && imageUri == null) return@launch
             
             var convId = _currentConversationId.value
             if (convId == null) {
                 // Create new conversation on first message
-                convId = chatMessagesRepo.createConversation(inputText.take(25))
+                val title = if (inputText.isNotBlank()) inputText.take(25) else "Image Message"
+                convId = chatMessagesRepo.createConversation(title)
                 _currentConversationId.value = convId
             }
 
             inputState.clearText()
 
-            val chatMessage = ChatMessage(SenderUuid.ME, inputText, System.currentTimeMillis(), convId)
+            val chatMessage = ChatMessage(SenderUuid.ME, inputText, System.currentTimeMillis(), convId, imageUri)
             chatMessagesRepo.insert(chatMessage)
 
             val mockResponse = """

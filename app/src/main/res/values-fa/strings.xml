@@ -46,4 +46,7 @@
     <string name="share">اشتراک‌گذاری</string>
     <string name="copy">کپی</string>
     <string name="copied_to_clipboard">در حافظه کپی شد</string>
+    <string name="voice_input">ورودی صوتی</string>
+    <string name="attach_image">پیوست تصویر</string>
+    <string name="speech_not_supported">تشخیص گفتار در این دستگاه پشتیبانی نمی‌شود</string>
 </resources>

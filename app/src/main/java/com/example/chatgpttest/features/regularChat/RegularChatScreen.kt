@@ -1,5 +1,11 @@
 package com.example.chatgpttest.features.regularChat
 
+import android.app.Activity
+import android.content.Intent
+import android.speech.RecognizerIntent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -9,6 +15,9 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Send
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.ChatBubbleOutline
 import androidx.compose.material.icons.outlined.ContentCopy
@@ -16,12 +25,17 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -29,6 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import com.example.chatgpttest.R
 import com.example.chatgpttest.features.renderer.MessageContent
 import com.example.chatgpttest.utils.ProcessingDialog
@@ -59,6 +74,29 @@ private fun RegularChatContent(
     onStreamChatClick: () -> Unit,
     onSettingsClick: () -> Unit
 ) {
+    var selectedImageUri by remember { mutableStateOf<String?>(null) }
+    
+    val imagePicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri ->
+            selectedImageUri = uri?.toString()
+        }
+    )
+
+    val speechRecognizer = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val data = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+                data?.firstOrNull()?.let { spokenText ->
+                    inputState.edit {
+                        replace(0, length, spokenText)
+                    }
+                }
+            }
+        }
+    )
+
     if (uiState.isShowProcessingDialog) {
         ProcessingDialog()
     }
@@ -142,21 +180,61 @@ private fun RegularChatContent(
                     modifier = Modifier.padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    OutlinedTextField(
-                        state = inputState,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .heightIn(min = 80.dp, max = 150.dp),
-                        placeholder = { Text(stringResource(R.string.what_can_i_help), color = Color(0xFF94A3B8)) },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color.Transparent,
-                            unfocusedBorderColor = Color.Transparent
-                        ),
-                        textStyle = MaterialTheme.typography.bodyLarge
-                    )
+                    if (selectedImageUri != null) {
+                        Box(modifier = Modifier.size(60.dp)) {
+                            AsyncImage(
+                                model = selectedImageUri,
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(8.dp)),
+                                contentScale = ContentScale.Crop
+                            )
+                            IconButton(
+                                onClick = { selectedImageUri = null },
+                                modifier = Modifier.size(20.dp).align(Alignment.TopEnd)
+                            ) {
+                                Icon(Icons.Default.Add, null, modifier = Modifier.size(14.dp))
+                            }
+                        }
+                    }
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IconButton(onClick = {
+                            imagePicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                        }) {
+                            Icon(Icons.Default.Image, contentDescription = stringResource(R.string.attach_image), tint = Color(0xFF94A3B8))
+                        }
+
+                        IconButton(onClick = {
+                            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                                putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+                            }
+                            try {
+                                speechRecognizer.launch(intent)
+                            } catch (e: Exception) {
+                            }
+                        }) {
+                            Icon(Icons.Default.Mic, contentDescription = stringResource(R.string.voice_input), tint = Color(0xFF94A3B8))
+                        }
+
+                        OutlinedTextField(
+                            state = inputState,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(min = 50.dp, max = 150.dp),
+                            placeholder = { Text(stringResource(R.string.what_can_i_help), color = Color(0xFF94A3B8)) },
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = Color.Transparent,
+                                unfocusedBorderColor = Color.Transparent
+                            ),
+                            textStyle = MaterialTheme.typography.bodyLarge
+                        )
+                    }
                     
                     Button(
-                        onClick = uiState.onSubmitClick,
+                        onClick = {
+                            uiState.onSubmitClick(selectedImageUri)
+                            selectedImageUri = null
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp)

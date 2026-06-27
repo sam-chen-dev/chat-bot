@@ -34,33 +34,20 @@ class RegularChatViewModel(
 
     private fun createUiState(): RegularChatUiState = RegularChatUiState(
         false,
-        ::submitText
+        { imageUri -> submitText(imageUri) }
     )
 
-    private fun submitText() = uiScope.launch {
+    private fun submitText(imageUri: String? = null) = uiScope.launch {
         try {
             updateIsShowProcessingDialog(true)
-
-            /*
-            val responseRequest = ResponseRequest(
-                GptModel.NANO.id,
-                inputState.text.toString(),
-                false,
-                conversationManager.getPreviousResponseId(getApplication())
-            )
-
-            val responseDto = openAiRepo.generateResponse(responseRequest)
-
-            responseDto?.output?.first()?.content?.first()?.text?.let { text ->
-                outputState.setTextAndPlaceCursorAtEnd(text)
-            }
-            */
+            
+            // In a real app, we would handle the imageUri here (e.g., upload it or send it as base64)
 
             val mockResponse = """
                 ### Regular Chat Mock Response
                 
                 This is a mock response with markdown and math for testing:
-                
+                ${if (imageUri != null) "\n*I see you attached an image! (URI: $imageUri)*\n" else ""}
                 - **Bold Text**
                 - *Italic Text*
                 
