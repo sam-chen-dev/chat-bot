@@ -30,11 +30,16 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.insert
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowLeft
+import androidx.compose.material.icons.automirrored.filled.ArrowRight
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material.icons.outlined.ContentCopy
@@ -175,7 +180,7 @@ private fun StreamChatContent(
                     if (uiState.currentConversationId == null && uiState.chatMessages.isEmpty()) {
                         EmptyChatPlaceholder()
                     } else {
-                        ChatMessageList(listState, uiState.chatMessages, ttsHandler)
+                        ChatMessageList(listState, uiState.chatMessages, ttsHandler, uiState)
                     }
                 }
                 ModernTypingArea(inputState, uiState.onSendClick)
@@ -353,7 +358,7 @@ private fun ModernToolbar(
 }
 
 @Composable
-private fun ChatMessageList(state: LazyListState, chatMessages: List<ChatMessage>, ttsHandler: TtsHandler) {
+private fun ChatMessageList(state: LazyListState, chatMessages: List<ChatMessage>, ttsHandler: TtsHandler, uiState: StreamChatUiState) {
     LazyColumn(
         state = state,
         reverseLayout = true,
@@ -362,13 +367,13 @@ private fun ChatMessageList(state: LazyListState, chatMessages: List<ChatMessage
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(chatMessages) { chatMessage ->
-            ModernChatMessageItem(chatMessage, ttsHandler)
+            ModernChatMessageItem(chatMessage, ttsHandler, uiState)
         }
     }
 }
 
 @Composable
-private fun ModernChatMessageItem(chatMessage: ChatMessage, ttsHandler: TtsHandler) {
+private fun ModernChatMessageItem(chatMessage: ChatMessage, ttsHandler: TtsHandler, uiState: StreamChatUiState) {
     val isMe = chatMessage.senderUuid == SenderUuid.ME
     val clipboardManager = LocalClipboardManager.current
     
@@ -439,6 +444,38 @@ private fun ModernChatMessageItem(chatMessage: ChatMessage, ttsHandler: TtsHandl
         }
     }
     
+    // Version Selector UI
+    val versionInfo = uiState.versionMap[chatMessage.id]
+    if (versionInfo != null && versionInfo.second > 1) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(top = 4.dp)
+        ) {
+            IconButton(
+                onClick = { uiState.onVersionChange(chatMessage.parentId, versionInfo.first - 2) },
+                enabled = versionInfo.first > 1,
+                modifier = Modifier.size(24.dp)
+            ) {
+                Icon(Icons.AutoMirrored.Filled.ArrowLeft, null, modifier = Modifier.size(16.dp))
+            }
+            
+            Text(
+                text = "${versionInfo.first} / ${versionInfo.second}",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = 4.dp)
+            )
+            
+            IconButton(
+                onClick = { uiState.onVersionChange(chatMessage.parentId, versionInfo.first) },
+                enabled = versionInfo.first < versionInfo.second,
+                modifier = Modifier.size(24.dp)
+            ) {
+                Icon(Icons.AutoMirrored.Filled.ArrowRight, null, modifier = Modifier.size(16.dp))
+            }
+        }
+    }
+    
     Row(
         modifier = Modifier.padding(top = 4.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -465,6 +502,32 @@ private fun ModernChatMessageItem(chatMessage: ChatMessage, ttsHandler: TtsHandl
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(16.dp)
             )
+        }
+
+        if (isMe) {
+            IconButton(
+                onClick = { uiState.onEditMessageClick(chatMessage) },
+                modifier = Modifier.size(32.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = stringResource(R.string.edit),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(16.dp)
+                )
+            }
+        } else {
+            IconButton(
+                onClick = { uiState.onRegenerateResponseClick(chatMessage) },
+                modifier = Modifier.size(32.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Refresh,
+                    contentDescription = stringResource(R.string.regenerate),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(16.dp)
+                )
+            }
         }
     }
 }

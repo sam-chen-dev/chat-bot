@@ -51,6 +51,8 @@
     <string name="speech_not_supported">تشخیص گفتار در این دستگاه پشتیبانی نمی‌شود</string>
     <string name="listen">شنیدن پاسخ</string>
     <string name="stop">توقف پخش</string>
+    <string name="edit">ویرایش</string>
+    <string name="regenerate">بازتولید پاسخ</string>
     <string name="theme">پوسته</string>
     <string name="light_theme">روشن</string>
     <string name="dark_theme">تیره</string>

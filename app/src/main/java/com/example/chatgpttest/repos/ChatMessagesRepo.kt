@@ -8,6 +8,7 @@ interface ChatMessagesRepo {
     // Messages
     suspend fun insert(chatMessage: ChatMessage): Long
     suspend fun update(chatMessage: ChatMessage): Int
+    suspend fun deleteMessage(messageId: Long)
     fun getMessagesForConversation(conversationId: Long): Flow<List<ChatMessage>>
     suspend fun deleteAll()
 

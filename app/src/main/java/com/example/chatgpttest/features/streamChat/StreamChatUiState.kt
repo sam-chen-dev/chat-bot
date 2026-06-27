@@ -12,5 +12,9 @@ data class StreamChatUiState(
     val onNewChatClick: () -> Unit,
     val onConversationClick: (Long) -> Unit,
     val onDeleteConversationClick: (Long) -> Unit,
-    val onSearchQueryChange: (String) -> Unit
+    val onSearchQueryChange: (String) -> Unit,
+    val onEditMessageClick: (ChatMessage) -> Unit = {},
+    val onRegenerateResponseClick: (ChatMessage) -> Unit = {},
+    val onVersionChange: (Long?, Int) -> Unit = { _, _ -> },
+    val versionMap: Map<Long, Pair<Int, Int>> = emptyMap()
 )

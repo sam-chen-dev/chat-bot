@@ -18,6 +18,9 @@ interface ChatMessagesDao {
     @Update
     suspend fun update(chatMessage: ChatMessage): Int
 
+    @Query("DELETE FROM chatMessages WHERE id = :id")
+    suspend fun deleteMessageById(id: Long)
+
     @Query("SELECT * FROM chatMessages WHERE conversationId = :conversationId ORDER BY creationTimeInMillis DESC")
     fun getMessagesForConversation(conversationId: Long): Flow<List<ChatMessage>>
 

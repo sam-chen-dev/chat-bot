@@ -12,7 +12,7 @@ import com.example.chatgpttest.models.domainModels.Conversation
         ChatMessage::class,
         Conversation::class
     ],
-    version = 3
+    version = 4
 )
 abstract class ChatGptDatabase : RoomDatabase() {
     abstract val chatMessagesDao: ChatMessagesDao

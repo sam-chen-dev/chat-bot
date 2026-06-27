@@ -9,7 +9,8 @@ data class ChatMessage(
     val text: String,
     val creationTimeInMillis: Long,
     val conversationId: Long = 0L,
-    val imageUrl: String? = null
+    val imageUrl: String? = null,
+    val parentId: Long? = null
 ) {
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L

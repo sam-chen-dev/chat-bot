@@ -15,6 +15,10 @@ class ChatMessagesRepoImpl(private val chatMessagesDao: ChatMessagesDao) : ChatM
         return chatMessagesDao.update(chatMessage)
     }
 
+    override suspend fun deleteMessage(messageId: Long) {
+        chatMessagesDao.deleteMessageById(messageId)
+    }
+
     override fun getMessagesForConversation(conversationId: Long): Flow<List<ChatMessage>> {
         return chatMessagesDao.getMessagesForConversation(conversationId)
     }
