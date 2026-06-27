@@ -7,7 +7,8 @@ import androidx.room.PrimaryKey
 data class ChatMessage(
     val senderUuid: String,
     val text: String,
-    val creationTimeInMillis: Long
+    val creationTimeInMillis: Long,
+    val conversationId: Long = 0L
 ) {
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L

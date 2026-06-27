@@ -12,4 +12,8 @@ object ConversationManager {
     fun getPreviousResponseId(context: Context): String? {
         return DataStore.getString(context, R.string.previous_response_id_key)
     }
+
+    suspend fun clearConversation(context: Context) {
+        DataStore.saveString(context, R.string.previous_response_id_key, "")
+    }
 }
