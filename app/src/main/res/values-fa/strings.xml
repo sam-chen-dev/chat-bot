@@ -1,0 +1,58 @@
+<resources>
+    <string name="app_name">تست چت‌جی‌پی‌تی</string>
+
+    <!-- Titles -->
+    <string name="regular_chat_title">گفتگوی معمولی</string>
+    <string name="stream_chat_title">گفتگوی استریم</string>
+    <string name="ai_assistant">دستیار هوشمند</string>
+    <string name="advanced_query">پرسش پیشرفته</string>
+    <string name="single_query">تک پرسش</string>
+
+    <!-- Drawer / History -->
+    <string name="chat_history">تاریخچه گفتگوها</string>
+    <string name="search_chats">جستجو در چت‌ها…</string>
+    <string name="new_chat">گفتگوی جدید</string>
+
+    <!-- Placeholders / Labels -->
+    <string name="empty_chat_placeholder">امروز چطور می‌توانم کمکتان کنم؟</string>
+    <string name="ask_anything">هر چیزی بپرسید…</string>
+    <string name="waiting_for_input">منتظر ورودی شما…</string>
+    <string name="what_can_i_help">امروز در چه موردی می‌توانم کمکتان کنم؟</string>
+    <string name="analyze_request">تحلیل درخواست</string>
+    <string name="response_label">پاسخ</string>
+    <string name="ask_something">چیزی بپرسید</string>
+    <string name="answer_placeholder">پاسخ شما اینجا ظاهر می‌شود…</string>
+    <string name="type_question_here">سوال خود را اینجا تایپ کنید…</string>
+    <string name="send_request">ارسال درخواست</string>
+    <string name="ai_workspace">فضای کاری هوشمند</string>
+    <string name="always_ready">همیشه آماده</string>
+
+    <!-- Keys / Internal -->
+    <string name="previous_response_id_key">شناسه پاسخ قبلی</string>
+    <string name="openai_base_url">https://api.openai.com/v1/</string>
+    <string name="auth_key_header_name">مجوز</string>
+    <string name="auth_key_header_value">Bearer %1$s</string>
+
+    <!-- General -->
+    <string name="processing">در حال پردازش…</string>
+    <string name="back">بازگشت</string>
+    <string name="menu">منو</string>
+    <string name="switch_to_stream">تغییر به استریم</string>
+    <string name="settings">تنظیمات</string>
+    <string name="language">زبان</string>
+    <string name="select_language">انتخاب زبان</string>
+    <string name="english">انگلیسی (English)</string>
+    <string name="persian">فارسی</string>
+    <string name="share">اشتراک‌گذاری</string>
+    <string name="copy">کپی</string>
+    <string name="copied_to_clipboard">در حافظه کپی شد</string>
+    <string name="voice_input">ورودی صوتی</string>
+    <string name="attach_image">پیوست تصویر</string>
+    <string name="speech_not_supported">تشخیص گفتار در این دستگاه پشتیبانی نمی‌شود</string>
+    <string name="listen">شنیدن پاسخ</string>
+    <string name="stop">توقف پخش</string>
+    <string name="theme">پوسته</string>
+    <string name="light_theme">روشن</string>
+    <string name="dark_theme">تیره</string>
+    <string name="system_default">پیش‌فرض سیستم</string>
+</resources>
