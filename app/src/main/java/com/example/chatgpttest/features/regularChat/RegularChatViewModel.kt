@@ -41,7 +41,6 @@ class RegularChatViewModel(
         try {
             updateIsShowProcessingDialog(true)
 
-            /*
             val responseRequest = ResponseRequest(
                 GptModel.NANO.id,
                 inputState.text.toString(),
@@ -54,9 +53,8 @@ class RegularChatViewModel(
             responseDto?.output?.first()?.content?.first()?.text?.let { text ->
                 outputState.setTextAndPlaceCursorAtEnd(text)
             }
-            */
 
-            val mockResponse = """
+            /*val mockResponse = """
                 ### Regular Chat Mock Response
                 
                 This is a mock response with markdown and math for testing:
@@ -76,7 +74,7 @@ class RegularChatViewModel(
                 ${'$'}${'$'} \int_{a}^{b} x^2 dx = \frac{b^3 - a^3}{3} ${'$'}${'$'}
             """.trimIndent()
 
-            outputState.setTextAndPlaceCursorAtEnd(mockResponse)
+            outputState.setTextAndPlaceCursorAtEnd(mockResponse)*/
 
             updateIsShowProcessingDialog(false)
         } catch (e: Exception) {
