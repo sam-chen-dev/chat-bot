@@ -60,7 +60,57 @@ fun SettingsScreen(onBackClick: () -> Unit) {
                     AppCompatDelegate.setApplicationLocales(appLocale)
                 }
             )
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+            Text(
+                text = stringResource(R.string.theme),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            val currentTheme = AppCompatDelegate.getDefaultNightMode()
+
+            ThemeOption(
+                label = stringResource(R.string.light_theme),
+                isSelected = currentTheme == AppCompatDelegate.MODE_NIGHT_NO,
+                onClick = { AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO) }
+            )
+
+            ThemeOption(
+                label = stringResource(R.string.dark_theme),
+                isSelected = currentTheme == AppCompatDelegate.MODE_NIGHT_YES,
+                onClick = { AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES) }
+            )
+
+            ThemeOption(
+                label = stringResource(R.string.system_default),
+                isSelected = currentTheme == AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM || currentTheme == AppCompatDelegate.MODE_NIGHT_UNSPECIFIED,
+                onClick = { AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) }
+            )
         }
+    }
+}
+
+@Composable
+private fun ThemeOption(
+    label: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+    ) {
+        Text(text = label)
+        RadioButton(
+            selected = isSelected,
+            onClick = onClick
+        )
     }
 }
 

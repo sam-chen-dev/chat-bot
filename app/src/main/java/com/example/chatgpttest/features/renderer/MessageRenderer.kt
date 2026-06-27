@@ -7,12 +7,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
@@ -95,6 +97,7 @@ fun parseSegments(text: String): List<Segment> {
 
 @Composable
 fun MarkdownText(text: String, modifier: Modifier = Modifier) {
+    val textColor = MaterialTheme.colorScheme.onSurface
     val annotated = buildAnnotatedString {
         //    Header(###example)
         val headerPattern = Regex("""^(#{1,6})\s+(.*)$""", RegexOption.MULTILINE)
@@ -117,7 +120,7 @@ fun MarkdownText(text: String, modifier: Modifier = Modifier) {
                     3 -> 18.sp
                     else -> 16.sp
                 }
-                withStyle(SpanStyle(fontWeight = FontWeight.Bold, fontSize = size)) {
+                withStyle(SpanStyle(fontWeight = FontWeight.Bold, fontSize = size, color = textColor)) {
                     append(content)
                 }
             } else {
@@ -125,23 +128,27 @@ fun MarkdownText(text: String, modifier: Modifier = Modifier) {
                 var lineCursor = 0
                 stylePattern.findAll(line).forEach { m ->
                     if (m.range.first > lineCursor) {
-                        append(line.substring(lineCursor, m.range.first))
+                        withStyle(SpanStyle(color = textColor)) {
+                            append(line.substring(lineCursor, m.range.first))
+                        }
                     }
                     if (m.groupValues[1].isNotEmpty()) {
-                        withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append(m.groupValues[1]) }
+                        withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = textColor)) { append(m.groupValues[1]) }
                     } else if (m.groupValues[2].isNotEmpty()) {
-                        withStyle(SpanStyle(fontStyle = FontStyle.Italic)) { append(m.groupValues[2]) }
+                        withStyle(SpanStyle(fontStyle = FontStyle.Italic, color = textColor)) { append(m.groupValues[2]) }
                     }
                     lineCursor = m.range.last + 1
                 }
                 if (lineCursor < line.length) {
-                    append(line.substring(lineCursor))
+                    withStyle(SpanStyle(color = textColor)) {
+                        append(line.substring(lineCursor))
+                    }
                 }
             }
             if (index < lines.size - 1) append("\n")
         }
     }
-    Text(annotated, modifier = modifier, fontSize = 15.sp, lineHeight = 22.sp)
+    Text(annotated, modifier = modifier, fontSize = 15.sp, lineHeight = 22.sp, color = textColor)
 }
 
 
@@ -169,6 +176,8 @@ fun KatexWebView(
     displayMode: Boolean,
     modifier: Modifier = Modifier
 ) {
+    val textColor = if (MaterialTheme.colorScheme.surface.luminance() < 0.5f) "white" else "black"
+
     AndroidView(
         modifier = modifier,
         factory = { context ->
@@ -193,7 +202,7 @@ fun KatexWebView(
         <link rel="stylesheet" href="file:///android_asset/katex/katex.min.css">
         <script src="file:///android_asset/katex/katex.min.js"></script>
         <style>
-          body { margin:0; padding:4px; background:transparent; color:black; font-family: sans-serif; }
+          body { margin:0; padding:4px; background:transparent; color:${textColor}; font-family: sans-serif; }
           #f { font-size: 1.1em; overflow-x: auto; }
         </style></head>
         <body><div id="f"></div>

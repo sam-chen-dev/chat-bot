@@ -49,4 +49,8 @@
     <string name="voice_input">Voice Input</string>
     <string name="attach_image">Attach Image</string>
     <string name="speech_not_supported">Speech recognition is not supported on this device</string>
+    <string name="theme">Theme</string>
+    <string name="light_theme">Light</string>
+    <string name="dark_theme">Dark</string>
+    <string name="system_default">System Default</string>
 </resources>

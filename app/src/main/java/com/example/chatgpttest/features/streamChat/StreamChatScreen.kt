@@ -93,11 +93,7 @@ import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 // Modern Color Palette
-private val BackgroundColor = Color(0xFFF8FAFC)
-private val UserBubbleColor = Color(0xFF6366F1)
-private val AiBubbleColor = Color(0xFFFFFFFF)
-private val TextPrimary = Color(0xFF1E293B)
-private val TextSecondary = Color(0xFF64748B)
+// Removed hardcoded colors to support Dark Mode via MaterialTheme.colorScheme
 
 @Composable
 fun StreamChatScreen(onBackClick: () -> Unit, onSettingsClick: () -> Unit) {
@@ -131,7 +127,7 @@ private fun StreamChatContent(
         drawerContent = {
             ModalDrawerSheet(
                 modifier = Modifier.width(300.dp),
-                drawerContainerColor = Color.White
+                drawerContainerColor = MaterialTheme.colorScheme.surface
             ) {
                 ConversationHistoryDrawer(uiState, scope, drawerState, onSettingsClick)
             }
@@ -155,7 +151,7 @@ private fun StreamChatContent(
                     }
                 )
             },
-            containerColor = BackgroundColor
+            containerColor = MaterialTheme.colorScheme.background
         ) { paddingValues ->
             Column(
                 modifier = Modifier
@@ -195,13 +191,13 @@ private fun ConversationHistoryDrawer(
             value = uiState.searchQuery,
             onValueChange = uiState.onSearchQueryChange,
             modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-            placeholder = { Text(stringResource(R.string.search_chats), color = TextSecondary) },
-            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = TextSecondary) },
+            placeholder = { Text(stringResource(R.string.search_chats), color = MaterialTheme.colorScheme.onSurfaceVariant) },
+            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant) },
             shape = RoundedCornerShape(12.dp),
             singleLine = true,
             colors = OutlinedTextFieldDefaults.colors(
-                unfocusedContainerColor = Color(0xFFF1F5F9),
-                focusedContainerColor = Color(0xFFF1F5F9),
+                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                 unfocusedBorderColor = Color.Transparent,
                 focusedBorderColor = Color.Transparent
             )
@@ -264,7 +260,7 @@ private fun ConversationItem(
     Surface(
         onClick = onClick,
         shape = RoundedCornerShape(12.dp),
-        color = if (isSelected) Color(0xFFEEF2FF) else Color.Transparent,
+        color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else Color.Transparent,
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
@@ -275,7 +271,7 @@ private fun ConversationItem(
                 text = conversation.title,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                color = if (isSelected) UserBubbleColor else TextPrimary,
+                color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f)
@@ -285,7 +281,7 @@ private fun ConversationItem(
                 Icon(
                     Icons.Outlined.Delete,
                     contentDescription = null,
-                    tint = TextSecondary,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(18.dp)
                 )
             }
@@ -302,7 +298,7 @@ private fun EmptyChatPlaceholder() {
             Text(
                 text = stringResource(R.string.empty_chat_placeholder),
                 style = MaterialTheme.typography.titleMedium,
-                color = TextSecondary
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -321,24 +317,24 @@ private fun ModernToolbar(
                 text = stringResource(R.string.ai_assistant),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = TextPrimary
+                color = MaterialTheme.colorScheme.onSurface
             )
         },
         navigationIcon = {
             IconButton(onClick = onMenuClick) {
-                Icon(Icons.Default.Menu, contentDescription = stringResource(R.string.menu), tint = TextPrimary)
+                Icon(Icons.Default.Menu, contentDescription = stringResource(R.string.menu), tint = MaterialTheme.colorScheme.onSurface)
             }
         },
         actions = {
             IconButton(onClick = onShareClick) {
-                Icon(Icons.Outlined.Share, contentDescription = stringResource(R.string.share), tint = TextPrimary)
+                Icon(Icons.Outlined.Share, contentDescription = stringResource(R.string.share), tint = MaterialTheme.colorScheme.onSurface)
             }
             IconButton(onClick = onBackClick) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back), tint = TextPrimary)
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back), tint = MaterialTheme.colorScheme.onSurface)
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.White.copy(alpha = 0.8f)
+            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
         ),
         modifier = Modifier.shadow(1.dp)
     )
@@ -373,26 +369,26 @@ private fun ModernChatMessageItem(chatMessage: ChatMessage) {
             horizontalArrangement = if (isMe) Arrangement.End else Arrangement.Start
         ) {
             if (!isMe) {
-                Surface(
-                    modifier = Modifier.size(36.dp),
-                    shape = CircleShape,
-                    color = Color(0xFFEEF2FF)
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Text("🤖", fontSize = 18.sp)
-                    }
-                }
-                Spacer(Modifier.width(8.dp))
-            }
-            
             Surface(
+                modifier = Modifier.size(36.dp),
+                shape = CircleShape,
+                color = MaterialTheme.colorScheme.secondaryContainer
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Text("🤖", fontSize = 18.sp)
+                }
+            }
+            Spacer(Modifier.width(8.dp))
+        }
+        
+        Surface(
             shape = RoundedCornerShape(
                 topStart = 20.dp,
                 topEnd = 20.dp,
                 bottomStart = if (isMe) 20.dp else 4.dp,
                 bottomEnd = if (isMe) 4.dp else 20.dp
             ),
-            color = if (isMe) UserBubbleColor else AiBubbleColor,
+            color = if (isMe) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
             tonalElevation = if (isMe) 0.dp else 2.dp,
             shadowElevation = 1.dp,
             modifier = Modifier.widthIn(max = 280.dp)
@@ -417,32 +413,32 @@ private fun ModernChatMessageItem(chatMessage: ChatMessage) {
             }
         }
 
-            if (isMe) {
-                Spacer(Modifier.width(8.dp))
-                Surface(
-                    modifier = Modifier.size(36.dp),
-                    shape = CircleShape,
-                    color = UserBubbleColor.copy(alpha = 0.1f)
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Text("👤", fontSize = 18.sp)
-                    }
+        if (isMe) {
+            Spacer(Modifier.width(8.dp))
+            Surface(
+                modifier = Modifier.size(36.dp),
+                shape = CircleShape,
+                color = MaterialTheme.colorScheme.primaryContainer
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Text("👤", fontSize = 18.sp)
                 }
             }
         }
-        
-        IconButton(
-            onClick = { clipboardManager.setText(AnnotatedString(chatMessage.text)) },
-            modifier = Modifier.size(32.dp).padding(top = 4.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.ContentCopy,
-                contentDescription = stringResource(R.string.copy),
-                tint = TextSecondary,
-                modifier = Modifier.size(16.dp)
-            )
-        }
     }
+    
+    IconButton(
+        onClick = { clipboardManager.setText(AnnotatedString(chatMessage.text)) },
+        modifier = Modifier.size(32.dp).padding(top = 4.dp)
+    ) {
+        Icon(
+            imageVector = Icons.Outlined.ContentCopy,
+            contentDescription = stringResource(R.string.copy),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(16.dp)
+        )
+    }
+}
 }
 
 @Composable
@@ -471,7 +467,7 @@ private fun ModernTypingArea(state: TextFieldState, onSendClick: (String?) -> Un
     )
 
     Surface(
-        color = Color.White,
+        color = MaterialTheme.colorScheme.surface,
         shadowElevation = 12.dp,
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -501,7 +497,7 @@ private fun ModernTypingArea(state: TextFieldState, onSendClick: (String?) -> Un
                 IconButton(onClick = {
                     imagePicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                 }) {
-                    Icon(Icons.Default.Image, contentDescription = stringResource(R.string.attach_image), tint = TextSecondary)
+                    Icon(Icons.Default.Image, contentDescription = stringResource(R.string.attach_image), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
 
                 IconButton(onClick = {
@@ -514,23 +510,23 @@ private fun ModernTypingArea(state: TextFieldState, onSendClick: (String?) -> Un
                         // Handle error
                     }
                 }) {
-                    Icon(Icons.Default.Mic, contentDescription = stringResource(R.string.voice_input), tint = TextSecondary)
+                    Icon(Icons.Default.Mic, contentDescription = stringResource(R.string.voice_input), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
 
                 Surface(
                     shape = RoundedCornerShape(28.dp),
-                    color = Color(0xFFF1F5F9),
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                     modifier = Modifier.weight(1f)
                 ) {
                     OutlinedTextField(
                         state = state,
-                        placeholder = { Text(stringResource(R.string.ask_anything), color = TextSecondary) },
+                        placeholder = { Text(stringResource(R.string.ask_anything), color = MaterialTheme.colorScheme.onSurfaceVariant) },
                         modifier = Modifier.fillMaxWidth(),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = Color.Transparent,
                             unfocusedBorderColor = Color.Transparent
                         ),
-                        textStyle = MaterialTheme.typography.bodyMedium.copy(color = TextPrimary)
+                        textStyle = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface)
                     )
                 }
 
@@ -542,14 +538,14 @@ private fun ModernTypingArea(state: TextFieldState, onSendClick: (String?) -> Un
                         selectedImageUri = null
                     },
                     shape = CircleShape,
-                    color = UserBubbleColor,
+                    color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(48.dp)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.Send,
                             contentDescription = stringResource(R.string.send_request),
-                            tint = Color.White,
+                            tint = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier.size(24.dp)
                         )
                     }

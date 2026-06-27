@@ -50,10 +50,7 @@ import com.example.chatgpttest.utils.ProcessingDialog
 import org.koin.androidx.compose.koinViewModel
 
 // Premium Color Palette
-private val BackgroundColor = Color(0xFFF1F5F9)
-private val SurfaceColor = Color(0xFFFFFFFF)
-private val AccentColor = Color(0xFF6366F1)
-private val TextHeader = Color(0xFF0F172A)
+// Removed hardcoded colors to support Dark Mode via MaterialTheme.colorScheme
 
 @Composable
 fun RegularChatScreen(onStreamChatClick: () -> Unit, onSettingsClick: () -> Unit) {
@@ -103,7 +100,7 @@ private fun RegularChatContent(
 
     Scaffold(
         topBar = { PremiumToolbar(onStreamChatClick, onSettingsClick) },
-        containerColor = BackgroundColor
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -115,12 +112,12 @@ private fun RegularChatContent(
         ) {
             // Workspace Header
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Outlined.AutoAwesome, null, tint = AccentColor, modifier = Modifier.size(20.dp))
+                Icon(Icons.Outlined.AutoAwesome, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
                 Spacer(Modifier.width(8.dp))
                 Text(
                     text = stringResource(R.string.ai_workspace),
                     style = MaterialTheme.typography.labelLarge,
-                    color = AccentColor,
+                    color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.ExtraBold
                 )
             }
@@ -131,7 +128,7 @@ private fun RegularChatContent(
                     .fillMaxWidth()
                     .weight(1f),
                 shape = RoundedCornerShape(24.dp),
-                color = SurfaceColor,
+                color = MaterialTheme.colorScheme.surface,
                 shadowElevation = 2.dp
             ) {
                 Column(
@@ -144,7 +141,7 @@ private fun RegularChatContent(
                         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                             Text(
                                 text = stringResource(R.string.waiting_for_input),
-                                color = Color(0xFF94A3B8),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 style = MaterialTheme.typography.bodyLarge
                             )
                         }
@@ -160,7 +157,7 @@ private fun RegularChatContent(
                                 Icon(
                                     imageVector = Icons.Outlined.ContentCopy,
                                     contentDescription = stringResource(R.string.copy),
-                                    tint = AccentColor
+                                    tint = MaterialTheme.colorScheme.primary
                                 )
                             }
                         }
@@ -173,7 +170,7 @@ private fun RegularChatContent(
                 modifier = Modifier
                     .fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp),
-                color = SurfaceColor,
+                color = MaterialTheme.colorScheme.surface,
                 shadowElevation = 4.dp
             ) {
                 Column(
@@ -201,7 +198,7 @@ private fun RegularChatContent(
                         IconButton(onClick = {
                             imagePicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                         }) {
-                            Icon(Icons.Default.Image, contentDescription = stringResource(R.string.attach_image), tint = Color(0xFF94A3B8))
+                            Icon(Icons.Default.Image, contentDescription = stringResource(R.string.attach_image), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
 
                         IconButton(onClick = {
@@ -213,7 +210,7 @@ private fun RegularChatContent(
                             } catch (e: Exception) {
                             }
                         }) {
-                            Icon(Icons.Default.Mic, contentDescription = stringResource(R.string.voice_input), tint = Color(0xFF94A3B8))
+                            Icon(Icons.Default.Mic, contentDescription = stringResource(R.string.voice_input), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
 
                         OutlinedTextField(
@@ -221,7 +218,7 @@ private fun RegularChatContent(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .heightIn(min = 50.dp, max = 150.dp),
-                            placeholder = { Text(stringResource(R.string.what_can_i_help), color = Color(0xFF94A3B8)) },
+                            placeholder = { Text(stringResource(R.string.what_can_i_help), color = MaterialTheme.colorScheme.onSurfaceVariant) },
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = Color.Transparent,
                                 unfocusedBorderColor = Color.Transparent
@@ -239,7 +236,7 @@ private fun RegularChatContent(
                             .fillMaxWidth()
                             .height(56.dp)
                             .clip(RoundedCornerShape(16.dp)),
-                        colors = ButtonDefaults.buttonColors(containerColor = AccentColor),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         contentPadding = PaddingValues(0.dp)
                     ) {
                         Box(
@@ -273,20 +270,20 @@ private fun PremiumToolbar(onStreamChatClick: () -> Unit, onSettingsClick: () ->
             Text(
                 text = stringResource(R.string.advanced_query),
                 fontWeight = FontWeight.ExtraBold,
-                color = TextHeader
+                color = MaterialTheme.colorScheme.onSurface
             ) 
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = BackgroundColor,
+            containerColor = MaterialTheme.colorScheme.background,
         ),
         actions = {
             IconButton(onClick = onSettingsClick) {
-                Icon(Icons.Outlined.Settings, contentDescription = stringResource(R.string.settings), tint = TextHeader)
+                Icon(Icons.Outlined.Settings, contentDescription = stringResource(R.string.settings), tint = MaterialTheme.colorScheme.onSurface)
             }
 
             Surface(
                 onClick = onStreamChatClick,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.surface,
                 shape = CircleShape,
                 modifier = Modifier.size(40.dp).padding(end = 4.dp),
                 shadowElevation = 2.dp
@@ -295,7 +292,7 @@ private fun PremiumToolbar(onStreamChatClick: () -> Unit, onSettingsClick: () ->
                     Icon(
                         imageVector = Icons.Outlined.ChatBubbleOutline,
                         contentDescription = stringResource(R.string.switch_to_stream),
-                        tint = AccentColor,
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(20.dp)
                     )
                 }
